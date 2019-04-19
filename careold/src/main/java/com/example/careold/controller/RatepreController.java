@@ -38,11 +38,24 @@ public class RatepreController {
     }
 
     @ResponseBody
+    @PostMapping("/selectRatepreFamily")
+    public ListOrderedMap selectRatepreFamily(@RequestBody ListOrderedMap param){
+        ListOrderedMap result=new ListOrderedMap();
+        String oldId=param.get("oldId").toString();
+        String timeFirst=null;
+        String timeLast=null;
+        LOG.info(oldId+"----"+timeFirst+"----"+timeLast);
+        List<RatepreDto> ratepreDtoList=ratepreDao.getRatepreFamily(Integer.parseInt(oldId),timeFirst,timeLast);
+        result.put("ratepreDtoList",ratepreDtoList);
+        return result;
+    }
+
+    @ResponseBody
     @PostMapping("/selectRatepreDetail")
     public ListOrderedMap selectRatepreDetail(@RequestBody ListOrderedMap param){
         ListOrderedMap result=new ListOrderedMap();
-        String name=param.get("name").toString();
-        List<RatepreDto> ratepreDtoListDetial=ratepreDao.getRatepreDetial(name);
+        String oldId=param.get("oldId").toString();
+        List<RatepreDto> ratepreDtoListDetial=ratepreDao.getRatepreDetial(Integer.parseInt(oldId));
         ArrayList hrs=new ArrayList();
         ArrayList bps=new ArrayList();
         ArrayList createTimes=new ArrayList();

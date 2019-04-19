@@ -51,6 +51,7 @@ public class test {
         QueryResponse query = solrClient.query(new SolrQuery("file_keywords:*"));
         SolrDocumentList results = query.getResults();
         System.out.println(results);
+
     }
 
     @Test

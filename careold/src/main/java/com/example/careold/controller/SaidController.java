@@ -4,6 +4,7 @@ import com.example.careold.common.DateConst;
 import com.example.careold.common.ReturnCodeUtil;
 import com.example.careold.dao.SaidDao;
 import com.example.careold.domain.Said;
+import com.example.careold.domain.Said2;
 import com.kenai.jaffl.annotations.In;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,17 @@ public class SaidController {
     public ListOrderedMap select(@RequestBody ListOrderedMap param){
         ListOrderedMap result=new ListOrderedMap();
         String textId=param.get("textId").toString();
-        List<Said> saids=saidDao.getSaid(Integer.parseInt(textId));
-        result.put("saids",saids);
+        String familyPhone=param.get("familyPhone").toString();
+        List<Said2> said2s=saidDao.getSaid(Integer.parseInt(textId));
+        for(int i=0;i<said2s.size();i++){
+            if(saidDao.isSaid(said2s.get(i).getSaidId(),familyPhone).size()>0){
+                said2s.get(i).setGood("1");
+            }
+            else{
+                said2s.get(i).setGood("0");
+            }
+        }
+        result.put("said2s",said2s);
         return result;
 
     }

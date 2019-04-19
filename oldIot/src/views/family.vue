@@ -23,68 +23,70 @@
     </div>
     <!-- start 添加角色弹窗 -->
     <el-dialog
-      title="角色添加"
+      title="家属添加"
       :visible.sync="customerDialogVisible"
       @close="closeRoleAddDialog"
       width="30%">
-      <el-form label-width="80px" :model="customerForm"  ref="addcustomerFormRef">
-        <el-form-item label="姓名" prop="customerName">
-          <el-input v-model="customerForm.customerName"></el-input>
+      <el-form label-width="80px" :model="familyForm"  ref="addfamilyFormRef">
+        <el-form-item label="姓名" prop="familyName">
+          <el-input v-model="familyForm.familyName"></el-input>
         </el-form-item>
-        <el-form-item label="年龄" prop="customerAge">
-          <el-input v-model="customerForm.customerAge"></el-input>
+        <el-form-item label="关系" prop="familyRelation">
+          <el-input v-model="familyForm.familyRelation"></el-input>
         </el-form-item>
-		<el-form-item label="性别" prop="customerSex">
-		<el-radio-group v-model="customerForm.customerSex">
+		<el-form-item label="性别" prop="familySex">
+		<el-radio-group v-model="familyForm.familySex">
 		  <el-radio label="男"></el-radio>
 		  <el-radio label="女"></el-radio>
 		</el-radio-group>
 		</el-form-item>
-		<el-form-item label="电话" prop="customerPhone">
-		<el-input v-model="customerForm.customerPhone"></el-input>
+		<el-form-item label="电话" prop="familyPhone">
+		<el-input v-model="familyForm.familyPhone"></el-input>
 		</el-form-item>
-		<el-form-item label="地址" prop="customerAddress">
-		<el-input v-model="customerForm.customerAddress"></el-input>
+		<el-form-item label="地址" prop="familyAddress">
+		<el-input v-model="familyForm.familyAddress"></el-input>
 		</el-form-item>
-		
+		<el-form-item label="老人电话" prop="oldPhone">
+		<el-input v-model="familyForm.oldPhone"></el-input>
+		</el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
       <el-button @click="customerDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="addRoles('addcustomerFormRef')">确 定</el-button>
+      <el-button type="primary" @click="addFamily('addfamilyFormRef')">确 定</el-button>
     </span>
     </el-dialog>
     <!-- end 添加角色弹窗 -->
     <!-- start 编辑角色弹窗 -->
     <el-dialog
-      title="角色编辑"
+      title="家属编辑"
       :visible.sync="oldEditDialogVisible"
       width="30%">
-      <el-form label-width="80px" :model="oldEditForm">
-        <el-form-item label="姓名" prop="customerName">
-        <el-input v-model="oldEditForm.customerName"></el-input>
+      <el-form label-width="80px" :model="familyEditForm">
+        <el-form-item label="姓名" prop="familyName">
+        <el-input v-model="familyEditForm.familyName"></el-input>
         </el-form-item>
-				<el-form-item label="姓名" prop="customerId" style="display: none;">
-				<el-input v-model="oldEditForm.customerId"></el-input>
-				</el-form-item>
-        <el-form-item label="年龄" prop="customerAge">
-        <el-input v-model="oldEditForm.customerAge"></el-input>
+		<el-form-item label="姓名" prop="familyId" style="display: none;">
+		<el-input v-model="familyEditForm.familyId"></el-input>
+		</el-form-item>		
+        <el-form-item label="关系" prop="familyRelation">
+        <el-input v-model="familyEditForm.familyRelation"></el-input>
         </el-form-item>
-        <el-form-item label="性别" prop="customerSex">
-        <el-radio-group v-model="oldEditForm.customerSex">
+        <el-form-item label="性别" prop="familySex">
+        <el-radio-group v-model="familyEditForm.familySex">
         <el-radio label="男"></el-radio>
         <el-radio label="女"></el-radio>
         </el-radio-group>
         </el-form-item>
-        <el-form-item label="电话" prop="customerPhone">
-        <el-input v-model="oldEditForm.customerPhone"></el-input>
+        <el-form-item label="电话" prop="familyPhone">
+        <el-input v-model="familyEditForm.familyPhone"></el-input>
         </el-form-item>
-        <el-form-item label="地址" prop="customerAddress">
-        <el-input v-model="oldEditForm.customerAddress"></el-input>
+        <el-form-item label="地址" prop="familyAddress">
+        <el-input v-model="familyEditForm.familyAddress"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
       <el-button @click="oldEditDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="editRole">确 定</el-button>
+      <el-button type="primary" @click="editFamily">确 定</el-button>
     </span>
     </el-dialog>
     <!-- end 编辑角色弹窗 -->
@@ -104,9 +106,9 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button size="mini" plain type="primary" icon="el-icon-edit"
-                     @click="handleEditRole(scope.$index, scope.row)">编辑
+                     @click="handleeditFamily(scope.$index, scope.row)">编辑
           </el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="deleteRole(scope.row.customerId)">删除
+          <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="deleteFamily(scope.row.familyId)">删除
           </el-button>
           
         </template>
@@ -165,14 +167,15 @@ export default {
       searchText: '', // 角色查询内容
       customerDialogVisible: false,
       oldEditDialogVisible: false,
-      customerForm: {
-        customerName: '',
-        customerAge: '',
-				customerSex: '',
-				customerPhone: '',
-				customerAddress: ''
+      familyForm: {
+        familyName: '',
+        familyRelation: '',
+		familySex: '',
+		familyPhone: '',
+		familyAddress: '',
+		oldPhone: ''
       },
-      oldEditForm: {
+      familyEditForm: {
         customerName: '',
         customerAge: '',
         customerSex: '',
@@ -237,10 +240,10 @@ export default {
       
     },
     // 添加角色
-    addRoles () {
+    addFamily () {
       var _this = this
-      axios.post('customer/add',
-        _this.customerForm,
+      axios.post('family/add',
+        _this.familyForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -269,12 +272,12 @@ export default {
     // 关闭添加角色对话框
     closeRoleAddDialog () {
       // 重置表单
-      this.$refs.addcustomerFormRef.resetFields()
+      this.$refs.addfamilyFormRef.resetFields()
     },
     // 编辑
-    editRole () {
+    editFamily () {
       var _this = this
-      axios.post('customer/update', _this.oldEditForm,
+      axios.post('family/updateFamily', _this.familyEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -301,8 +304,8 @@ export default {
         })
     },
     // 删除
-    async deleteRole (customerId) {
-      console.log(customerId)
+    async deleteFamily (familyId) {
+      console.log(familyId)
 
       var _this = this
       try {
@@ -311,8 +314,8 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         })
-        console.log(customerId)
-        axios.post('customer/delete', {'customerId': customerId},
+        console.log(familyId)
+        axios.post('family/deleteFamily', {'familyId': familyId},
           {
             headers: {
               'content-type': 'application/json'
@@ -340,9 +343,9 @@ export default {
       }
     },
     // 编辑信息
-    handleEditRole (index, row) {
+    handleeditFamily (index, row) {
       this.oldEditDialogVisible = true
-      this.oldEditForm = Object.assign({}, row) // 解决修改弹出框数据时，表格数据会发生同步改变
+      this.familyEditForm = Object.assign({}, row) // 解决修改弹出框数据时，表格数据会发生同步改变
       // console.log(row)
     },
     handleSizeChange (val) {

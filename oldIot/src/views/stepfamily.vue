@@ -1,10 +1,9 @@
 <template>
   <div class="roles">
     <!-- 查询和添加 -->
-    <div class="sys-research">
+    <!-- <div class="sys-research">
       <el-row class="row-search">
         <el-col :span="8">
-          <!-- 查询 -->
           <el-input
             placeholder="请输入搜索内容"
             v-model="searchText"
@@ -27,11 +26,11 @@
         </el-date-picker>
         </div>
         </el-col>
-		<el-badge :value="this.stepCount" class="item">
-		  <el-button size="small">睡眠不合格</el-button>
+		<el-badge :value="12" class="item">
+		  <el-button size="small">不合格</el-button>
 		</el-badge>
       </el-row>
-    </div>
+    </div> -->
     <!-- start 添加角色弹窗 -->
     <el-dialog
       title="角色添加"
@@ -72,7 +71,7 @@
     </el-dialog>
     <!-- end 编辑角色弹窗 -->
     <!-- 表格 -->
-    <el-table :data="stepList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+    <el-table :data="stepList"
     style="width: 100%" border>
     
       <el-table-column type="index" width="100" align="center"></el-table-column>
@@ -97,7 +96,7 @@
       </el-table-column>
     </el-table>
     <!-- start 分页 -->
-    <div style="margin-top: 10px;text-align: center">
+    <!-- <div style="margin-top: 10px;text-align: center">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="changePage"
@@ -106,7 +105,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
       </el-pagination>
-    </div>
+    </div> -->
     <!-- end 分页 -->
     <!-- 分配权限对话框 -->
     <el-dialog title="睡眠时间统计" :visible.sync="isShowRoleDialog">
@@ -177,14 +176,14 @@ export default {
         label: 'authName'
       },
       // 当前被分配权限的角色id
-      roleId: -1,
-			stepCount:''
+      roleId: -1
     }
   },
   created () {
 	  // let myChart = this.$echarts.init(document.getElementById('myChart'))
+		this.oldId=localStorage.getItem('oldIdfamily')
+		console.log(localStorage.getItem('oldIdfamily'))
     this.searchStep()
-		this.getCount()
 	// this.drawLine()
   },
   updated() {
@@ -197,23 +196,14 @@ export default {
   methods: {
     // 查询
     searchStep () {
-      console.log('查询老人')
-      console.log('search')
-      
-      var _this = this
-      var name = _this.searchText
-      console.log(this.value6)
-      console.log('55555555555555')
-      if(this.value6.length==0){
-				console.log('null')
-      	this.value6=['','']
-      }
-      console.log('00'+this.value6[0])
-      axios.post('step/selectStep',
+      var _this=this
+            // curRole 表示当前角色的数据，children属性是当前角色拥有的权限
+      //       console.log('showRoleDialog', curOld.name)
+      // 			_this.name=curOld.name
+      			var oldId=_this.oldId
+      axios.post('step/selectStepFamily',
         {
-          'name': name === '' ? '' : _this.searchText,
-      		'timeFirst':_this.value6[0] =='' ? '' : _this.value6[0],
-      		'timeLast': _this.value6[1] =='' ? '' : _this.value6[1]
+          "oldId":oldId
         },
         {
           headers: {
@@ -230,25 +220,6 @@ export default {
           console.log(error)
         })
     },
-		getCount(){
-			console.log('kaishe')
-			var _this=this
-			axios.post('step/selectStepCount',
-				{
-					
-				},
-				{
-					headers: {
-						'content-type': 'application/json'
-					},
-					withCredentials: true
-				}).then(function (response) {
-				_this.stepCount=response.data.deviceIdList.length
-			})
-				.catch(function (error) {
-					console.log(error)
-				})
-		},
     // 添加角色
     addRoles () {
       var _this = this
@@ -375,15 +346,11 @@ export default {
     // 展示分配权限对话框
     showRoleDialog (curOld) {
       var _this=this
-      console.log('0000000'+curOld.oldId)
-			var oldId=curOld.oldId
-			_this.time=curOld.createTime
-			// _this.name=name
-			console.log(oldId)
+      var oldId=_this.oldId
       // 展示对话框
       _this.isShowRoleDialog = true
       			axios.post('step/selectStepDetail',{
-								'oldId': oldId
+								"oldId":oldId
 							},
       				{
       					headers: {
@@ -422,25 +389,16 @@ export default {
 			
 					// 绘制图表
 			        myChart.setOption({
-			            title: { text: _this.name+"  睡眠时间  "+_this.time },
+			            title: { text: _this.name+"  睡眠时间  "+_this.time+"时" },
 			            tooltip: {},
 			            xAxis: {
 			                data: _this.createTime
 			            },
-			            yAxis: [{
-										type: 'value',
-												show: true,    //显示纵轴false-不显示，true-显示
-												name:'小时'   //这里是纵轴标题
-									}],
+			            yAxis: {},
 			            series: [{
 			                name: '销量',
-			                type: 'bar',
-			                data: _this.sleep,
-											itemStyle:{
-											           normal:{
-											                  color:'#99CCFF'
-											              }
-											          },
+			                type: 'line',
+			                data: _this.sleep
 			            }]
 			        });
 		});

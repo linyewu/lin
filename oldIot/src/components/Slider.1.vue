@@ -66,7 +66,14 @@ export default {
           title: '基础管理',
           icon: 'el-icon-location',
           children: [
-            
+            {
+              index: '/roles',
+              childtitle: '角色列表'
+            },
+            {
+              index: '/rights',
+              childtitle: '权限列表'
+            },
 						{
 							index: '/watch',
 							childtitle: '手表信息'
@@ -97,10 +104,6 @@ export default {
 			{
 			index: '/family',
 			childtitle: '家属管理'
-			},
-			{
-			index: '/saidOperation',
-			childtitle: '评论管理'
 			}
 		]
 		}

@@ -22,7 +22,7 @@
 				
 			  <el-header style="height: 400px;">
 				  <el-table
-			:data="tableData"
+			:data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
 			@row-click="getDetail"
 			style="width: 100%">
 			<el-table-column
@@ -52,8 +52,40 @@
 			  </template>
 			</el-table-column>
 		  </el-table>
+		  <!-- start 分页 -->
+		  <div style="margin-top: 10px;text-align: center">
+		    <el-pagination
+		      @size-change="handleSizeChange"
+		      @current-change="changePage"
+		      :current-page.sync="currentPage"
+		      :page-size="pageSize"
+		      layout="total, sizes, prev, pager, next, jumper"
+		      :total="total">
+		    </el-pagination>
+		  </div>
+		  <!-- end 分页 -->
 	  </el-header>
-	  <el-main>Main</el-main>
+	  
+	  <el-main>
+		  <span style="color: #C0C0C0;font-size: 20px;text-align: left;display: flex;">上传图片到公告展示栏</span><hr />
+		  <div style="margin-left: 35px;">
+		  	<el-upload
+		  	class="upload-demo"
+		  	action="image/saveImage"
+		  	:on-preview="handlePreview"
+		  	:on-remove="handleRemove"
+		  	:on-success="handleAvatarSuccess"
+		  	:before-upload="beforeAvatarUpload"
+		  	multiple
+		  	:limit="10"
+		  	:file-list="fileList2"
+		  	list-type="picture">
+		  	
+		  	<el-button size="small" type="primary">点击上传</el-button>
+		  	<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+		  	</el-upload>
+		  </div>
+	  </el-main>
 	</el-container>
   </div>
 </template>
@@ -128,6 +160,43 @@ export default {
 					}
 				})
       },
+	  handleSizeChange (val) {
+	    console.log(`每页 ${val} 条`)
+	    this.pageSize = val
+	  },
+	  handleCurrentChange (val) {
+	    console.log(`当前页: ${val}`)
+	    this.currentPage = val
+	  },
+	  changePage (val) {
+	    console.log(`当前页: ${val}`)
+	    this.currentPage = val
+	  },
+	  handleRemove(file, fileList) {
+	  			console.log(file, fileList);
+	  },
+	  handlePreview(file) {
+	  			console.log(file);
+	  },
+	  handleAvatarSuccess(res, file) {
+	    this.imageUrl = URL.createObjectURL(file.raw);
+	  },
+	  beforeAvatarUpload(file) {
+	  		  var _this=this
+	  		  _this.fileListName.push(file.name)
+	  		  console.log(_this.fileListName)
+	  		  console.log(file.name+'----------------------')
+	    const isJPG = file.type === 'image/jpeg';
+	    const isLt2M = file.size / 1024 / 1024 < 8;
+	  
+	    if (!isJPG) {
+	      this.$message.error('上传头像图片只能是 JPG 格式!');
+	    }
+	    if (!isLt2M) {
+	      this.$message.error('上传头像图片大小不能超过 2MB!');
+	    }
+	    return isJPG && isLt2M;
+	  },
 	  getDetail(row, column, event){
 	  	console.log(row, column, event)
 	  	var textId = row.textId
@@ -203,6 +272,12 @@ export default {
           textmain: '上海市普陀区金沙江路 1517 弄'
         }],
 		searchText: '', // 查询内容
+		fileListName:[],
+		// fileList2: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
+		fileList2: [],
+		total: 0,
+		pageSize: 10,
+		currentPage: 1
     };
   }
 }

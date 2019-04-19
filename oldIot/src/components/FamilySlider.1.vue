@@ -8,9 +8,9 @@
         active-text-color="#000"
         router
         >
-        <el-menu-item index="/main" >
+        <el-menu-item index="/familyMain" >
           <i class="el-icon-menu"></i>
-          <span slot="title">首页</span>
+          <span slot="title">家属首页</span>
         </el-menu-item>
 
         <el-submenu v-for="(item,index) in menuList" :key="index" :index='item.id'>
@@ -18,9 +18,9 @@
             <i :class="item.icon"></i>
             <span>{{item.title}}</span>
           </template>
-          <el-menu-item-group >
+          <!-- <el-menu-item-group >
             <el-menu-item v-for="child in item.children" :key="child.id" :index='child.index'>{{child.childtitle}}</el-menu-item>
-          </el-menu-item-group>
+          </el-menu-item-group> -->
         </el-submenu>
 
         
@@ -29,7 +29,7 @@
 
 <script>
 export default {
-  name: 'Slider',
+  name: 'FamilySlider',
   data () {
     return {
       menuList: [
@@ -38,72 +38,28 @@ export default {
           title: '健康管理',
           icon: 'el-icon-location',
           children: [
-						
 						{
 							index: '/ratepre',
 							childtitle: '心率血压'
-						},
-						{
-							index: '/step',
-							childtitle: '睡眠步数'
-						},
-						{
-							index: '/warning',
-							childtitle: '摔倒报警'
-						},
-						{
-							index: '/position',
-							childtitle: '位置信息'
-						},
-						{
-							index: '/life',
-							childtitle: '生活信息'
 						}
+// 						{
+// 							index: '/step',
+// 							childtitle: '睡眠步数'
+// 						},
+// 						{
+// 							index: '/warning',
+// 							childtitle: '摔倒报警'
+// 						},
+// 						{
+// 							index: '/position',
+// 							childtitle: '位置信息'
+// 						},
+// 						{
+// 							index: '/life',
+// 							childtitle: '生活信息'
+// 						}
           ]
-        },
-        {
-          id: '2',
-          title: '基础管理',
-          icon: 'el-icon-location',
-          children: [
-            
-						{
-							index: '/watch',
-							childtitle: '手表信息'
-						},
-						{
-							index: '/person',
-							childtitle: '人员信息'
-						},
-						{
-							index: '/customer',
-							childtitle: '监护人信息'
-						}
-          ]
-        },
-		{
-		id: '3',
-		title: '后台管理',
-		icon: 'el-icon-location',
-		children: [
-			{
-			index: '/textTwo',
-			childtitle: '公告添加'
-			},
-			{
-			index: '/textOpt',
-			childtitle: '公告管理'
-			},
-			{
-			index: '/family',
-			childtitle: '家属管理'
-			},
-			{
-			index: '/saidOperation',
-			childtitle: '评论管理'
-			}
-		]
-		}
+        }
       ]
 	  
     }

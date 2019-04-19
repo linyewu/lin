@@ -24,6 +24,9 @@ public class StepController {
     @Autowired
     StepDao stepDao;
 
+    @Autowired
+    RatepreDao ratepreDao;
+
     private static final Logger LOG = LoggerFactory.getLogger(RatepreController.class);
 
     @ResponseBody
@@ -39,13 +42,23 @@ public class StepController {
         return result;
     }
 
+    @ResponseBody
+    @PostMapping("/selectStepFamily")
+    public ListOrderedMap selectStepFamily(@RequestBody ListOrderedMap param){
+        ListOrderedMap result=new ListOrderedMap();
+        String oldId=param.get("oldId").toString();
+        List<StepDto> stepDtos=stepDao.getStepSleepFamily(Integer.parseInt(oldId));
+        result.put("stepDtos",stepDtos);
+        return result;
+    }
+
 
     @ResponseBody
     @PostMapping("/selectStepDetail")
     public ListOrderedMap selectStepDetail(@RequestBody ListOrderedMap param){
         ListOrderedMap result=new ListOrderedMap();
-        String name=param.get("name").toString();
-        List<StepDto> stepDtos=stepDao.getStepSleepDetail(name);
+        String oldId=param.get("oldId").toString();
+        List<StepDto> stepDtos=stepDao.getStepSleepDetail(Integer.parseInt(oldId));
         ArrayList sleep=new ArrayList();
         ArrayList createTime=new ArrayList();
         for(int i=0;i<stepDtos.size();i++){
@@ -57,4 +70,26 @@ public class StepController {
         result.put("createTime",createTime);
         return result;
     }
+
+    @ResponseBody
+    @PostMapping("/selectStepCount")
+    public ListOrderedMap selectStepCount(@RequestBody ListOrderedMap param){
+        ListOrderedMap result=new ListOrderedMap();
+        List<String> deviceIdList=stepDao.getSleepBadCount();
+        result.put("deviceIdList",deviceIdList);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/getAllCount")
+    public ListOrderedMap getAllCount(@RequestBody ListOrderedMap param){
+        ListOrderedMap result=new ListOrderedMap();
+        List<String> rates=ratepreDao.getRateCount();
+        List<String> pres=ratepreDao.getPreCount();
+        List<String> deviceIdList=stepDao.getSleepBadCount();
+        String allCount=rates.size()+pres.size()+deviceIdList.size()+"";
+        result.put("allCount",allCount);
+        return result;
+    }
+
 }

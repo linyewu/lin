@@ -1,10 +1,9 @@
 <template>
   <div class="roles">
     <!-- 查询和添加 -->
-    <div class="sys-research">
+    <!-- <div class="sys-research">
       <el-row class="row-search">
         <el-col :span="8">
-          <!-- 查询 -->
           <el-input
             placeholder="请输入搜索内容"
             v-model="searchText"
@@ -12,14 +11,14 @@
             <el-button
               slot="append"
               icon="el-icon-search"
-              @click="searchStep"></el-button>
+              @click="searchOlds"></el-button>
           </el-input>
         </el-col>
         <el-col :span="8">
         <div class="block">
         <el-date-picker
         v-model="value6"
-				value-format="yyyy-MM-dd"
+		value-format="yyyy-MM-dd"
         type="daterange"
         range-separator="至"
         start-placeholder="开始日期"
@@ -27,13 +26,16 @@
         </el-date-picker>
         </div>
         </el-col>
-		<el-badge :value="this.stepCount" class="item">
-		  <el-button size="small">睡眠不合格</el-button>
+		<el-badge :value="this.rateCount" class="item">
+		  <el-button size="small">心率不合格</el-button>
+		</el-badge>
+		<el-badge :value="this.preCount" class="item" style="margin-left: 20px;">
+			<el-button size="small">血压不合格</el-button>
 		</el-badge>
       </el-row>
-    </div>
+    </div> -->
     <!-- start 添加角色弹窗 -->
-    <el-dialog
+    <!-- <el-dialog
       title="角色添加"
       :visible.sync="roleDialogVisible"
       @close="closeRoleAddDialog"
@@ -50,40 +52,27 @@
       <el-button @click="roleDialogVisible = false">取 消</el-button>
       <el-button type="primary" @click="addRoles('addRoleFormRef')">确 定</el-button>
     </span>
-    </el-dialog>
+    </el-dialog> -->
     <!-- end 添加角色弹窗 -->
-    <!-- start 编辑角色弹窗 -->
-    <el-dialog
-      title="角色编辑"
-      :visible.sync="roleEditDialogVisible"
-      width="30%">
-      <el-form label-width="80px" :model="roleEditForm">
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="roleEditForm.roleName"></el-input>
-        </el-form-item>
-        <el-form-item label="角色描述" prop="roleDesc">
-          <el-input v-model="roleEditForm.roleDesc"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-      <el-button @click="roleEditDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="editRole">确 定</el-button>
-    </span>
-    </el-dialog>
-    <!-- end 编辑角色弹窗 -->
-    <!-- 表格 -->
-    <el-table :data="stepList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
-    style="width: 100%" border>
     
-      <el-table-column type="index" width="100" align="center"></el-table-column>
+    <!-- 表格 -->
+    <el-table :data="oldsList"
+    style="width: 100%" border>
+    <!-- 可展开行 -->
+      
+      <el-table-column type="index" width="150" align="center"></el-table-column>
       <el-table-column prop="name" label="姓名" width="180" align="center"></el-table-column>
-      <el-table-column prop="sex" label="性别" width="100" align="center"></el-table-column>
-			<el-table-column prop="step" label="今日步数" width="150" align="center"></el-table-column>
-			<el-table-column prop="sleep" label="睡眠时间" width="150" align="center"></el-table-column>
-			<el-table-column prop="sleepSate" label="睡眠情况" width="150" align="center">
+      <el-table-column prop="sex" label="性别" width="270" align="center"></el-table-column>
+			<el-table-column prop="preState" label="血压状态" width="180" align="center">
 				<template slot-scope="scope">
-				  <span v-if="scope.row.sleepSate==1" style="color:red">异常</span>
-				  <span v-else style="color: #37B328">正常</span>
+                  <span v-if="scope.row.preState==1" style="color:red">异常</span>
+                  <span v-else style="color: #37B328">正常</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="rateState" label="心率状态" width="180" align="center">
+				<template slot-scope="scope">
+					<span v-if="scope.row.rateState==1" style="color:red">异常</span>
+					<span v-else style="color: #37B328">正常</span>				
 				</template>
 			</el-table-column>
 			<el-table-column prop="createTime" label="时间" width="180" align="center"></el-table-column>
@@ -97,7 +86,7 @@
       </el-table-column>
     </el-table>
     <!-- start 分页 -->
-    <div style="margin-top: 10px;text-align: center">
+    <!-- <div style="margin-top: 10px;text-align: center">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="changePage"
@@ -106,15 +95,30 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
       </el-pagination>
-    </div>
+    </div> -->
     <!-- end 分页 -->
     <!-- 分配权限对话框 -->
-    <el-dialog title="睡眠时间统计" :visible.sync="isShowRoleDialog">
+    <el-dialog title="心率血压详细信息" :visible.sync="isShowRoleDialog" >
+      <!--
+        Tree 树形控件
+          :data="data2" 数据源，数据中通过 label 属性表示树形节点的名称；通过 children 属性来指定该节点的子节点
+          show-checkbox 添加该属性后，节点会带有复选框
+          :default-expanded-keys="[2, 3]" 设置默认展开的节点key（key对应数据中的id）
+          :default-checked-keys="[5]" 设置默认选中的节点key（id）
+          node-key="id" 使用数据中的哪个属性来表示每个节点的key值，一般就是唯一的id值
+          :props="defaultProps"
+          :default-expand-all="true" 是否默认展开所有节点
+      -->
       
 	  
 	  <!--start echarts表格-->
-	  <div id="myChart" ref="mychart" :style="{width: '300px', height: '300px'}"></div>
+	  <div id="myChart" ref="mychart" style="width: 500px;height:200px;display: inline-block;"></div>
 		<!--end echarts表格-->
+		
+		<!--start echarts表格-->
+		<div id="myChartTwo" ref="mychartTwo" style="width: 500px;height:200px;display: inline-block;"></div>
+		<!--end echarts表格-->
+		
       <div slot="footer" class="dialog-footer">
         <el-button @click="isShowRoleDialog = false">取 消</el-button>
         <el-button type="primary" @click="assignRights">确 定</el-button>
@@ -140,30 +144,25 @@ export default {
         roleName: '',
         roleDesc: ''
       },
-			value6: '',
       roleEditForm: {
         roleId: '',
         roleName: '',
         roleDesc: ''
       },
+	  value6: '',
       popoverRole: true,
       total: 0,
       pageSize: 10,
       currentPage: 1,
-      stepList: [{
+      oldsList: [{
 		  oldId:'1',
 			name:'小黄',
 		  sex:'男',
-			sleep: '8',
-		  step:'1000',
-			sleepSate:'正常',
-			createTime:'2019-02-20'
+		  preState:'正常',
+			rateState:'正常',
+			createTime:'2019-02-20 15:34:56'
 	  }],
-		sleep: '',
-		sleep: [],
-		name: '',
-		time: '',
-		createTime: [],
+		oldId: '',
       // 控制分配权限对话框的展示和隐藏
       isShowRoleDialog: false,
 
@@ -178,13 +177,24 @@ export default {
       },
       // 当前被分配权限的角色id
       roleId: -1,
-			stepCount:''
+			hrs: [],
+			bps: [],
+			createTimes: [],
+			time: '',
+			name: '',
+			rateCount: '',
+			preCount: ''
     }
   },
   created () {
 	  // let myChart = this.$echarts.init(document.getElementById('myChart'))
-    this.searchStep()
-		this.getCount()
+		console.log('---')
+    
+		// this.getCount()
+		this.oldId=localStorage.getItem('oldIdfamily')
+		console.log(localStorage.getItem('oldIdfamily'))
+		this.searchOlds()
+		console.log('---')
 	// this.drawLine()
   },
   updated() {
@@ -196,25 +206,24 @@ export default {
   },
   methods: {
     // 查询
-    searchStep () {
+    searchOlds () {
       console.log('查询老人')
-      console.log('search')
-      
+//       console.log('search')
+// 			
       var _this = this
-      var name = _this.searchText
-      console.log(this.value6)
-      console.log('55555555555555')
-      if(this.value6.length==0){
-				console.log('null')
-      	this.value6=['','']
-      }
-      console.log('00'+this.value6[0])
-      axios.post('step/selectStep',
+      var oldId = _this.oldId
+			console.log(_this.oldId)
+// 			console.log(this.value6)
+// 			console.log('55555555555555')
+// 			if(this.value6.length==0){
+// 				console.log('null')
+// 				this.value6=['','']
+// 			}
+// 			console.log(this.value6[1])
+      axios.post('ratepre/selectRatepreFamily',
         {
-          'name': name === '' ? '' : _this.searchText,
-      		'timeFirst':_this.value6[0] =='' ? '' : _this.value6[0],
-      		'timeLast': _this.value6[1] =='' ? '' : _this.value6[1]
-        },
+					"oldId":oldId
+				},
         {
           headers: {
             'content-type': 'application/json'
@@ -222,9 +231,9 @@ export default {
           withCredentials: true
         }).then(function (response) {
         console.log(response)
-      	console.log('====================================')
-        _this.stepList = response.data.stepDtos
-        _this.total = response.data.stepDtos.length
+				console.log('====================================')
+        _this.oldsList = response.data.ratepreDtoList
+        _this.total = response.data.ratepreDtoList.length
       })
         .catch(function (error) {
           console.log(error)
@@ -233,7 +242,7 @@ export default {
 		getCount(){
 			console.log('kaishe')
 			var _this=this
-			axios.post('step/selectStepCount',
+			axios.post('/ratepre/selectRatepreCount',
 				{
 					
 				},
@@ -243,7 +252,10 @@ export default {
 					},
 					withCredentials: true
 				}).then(function (response) {
-				_this.stepCount=response.data.deviceIdList.length
+				console.log("rateCount",response)
+				console.log('pppppppp')
+				_this.rateCount=response.data.rates.length
+				_this.preCount=response.data.pres.length
 			})
 				.catch(function (error) {
 					console.log(error)
@@ -265,7 +277,7 @@ export default {
         console.log(response)
         if (response.data.returnCode === '1111') {
           _this.roleDialogVisible = false
-          _this.searchStep()
+          _this.searchOlds()
           _this.$message({
             type: 'success',
             message: '添加角色成功'
@@ -286,73 +298,45 @@ export default {
       // 重置表单
       this.$refs.addRoleFormRef.resetFields()
     },
-    // 编辑
-    editRole () {
-//       var _this = this
-//       axios.post('roles/update', _this.roleEditForm,
-//         {
-//           headers: {
-//             'content-type': 'application/json'
-//           },
-//           withCredentials: true
-//         }).then(function (response) {
-//         console.log(response)
-//         if (response.data.returnCode === '1111') {
-//           _this.roleEditDialogVisible = false
-//           _this.$message({
-//             type: 'success',
-//             message: '编辑角色信息成功'
-//           })
-//           _this.searchStep()
-//         } else {
-//           _this.$message({
-//             type: 'error',
-//             message: '编辑角色信息失败'
-//           })
-//         }
-//       })
-//         .catch(function (error) {
-//           console.log(error)
-//         })
-    },
+    
     // 删除
     async deleteRole (roleName) {
-//       console.log(roleName)
-// 
-//       var _this = this
-//       try {
-//         await _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-//           confirmButtonText: '确定',
-//           cancelButtonText: '取消',
-//           type: 'warning'
-//         })
-//         console.log(roleName)
-//         axios.post('roles/delete', {'roleName': roleName},
-//           {
-//             headers: {
-//               'content-type': 'application/json'
-//             },
-//             withCredentials: true
-//           }).then(function (response) {
-//           console.log(response)
-//           if (response.data.returnCode === '1111') {
-//             _this.$message({
-//               type: 'success',
-//               message: '删除信息成功'
-//             })
-//           }
-//           _this.searchStep()
-//         })
-//           .catch(function (error) {
-//             console.log(error)
-//           })
-//       } catch (err) {
-//         // 取消删除
-//         this.$message({
-//           type: 'info',
-//           message: '已取消删除'
-//         })
-//       }
+      console.log(roleName)
+
+      var _this = this
+      try {
+        await _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        console.log(roleName)
+        axios.post('roles/delete', {'roleName': roleName},
+          {
+            headers: {
+              'content-type': 'application/json'
+            },
+            withCredentials: true
+          }).then(function (response) {
+          console.log(response)
+          if (response.data.returnCode === '1111') {
+            _this.$message({
+              type: 'success',
+              message: '删除信息成功'
+            })
+          }
+          _this.searchOlds()
+        })
+          .catch(function (error) {
+            console.log(error)
+          })
+      } catch (err) {
+        // 取消删除
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      }
     },
     // 编辑信息
     handleEditRole (index, row) {
@@ -374,35 +358,39 @@ export default {
     },
     // 展示分配权限对话框
     showRoleDialog (curOld) {
-      var _this=this
-      console.log('0000000'+curOld.oldId)
-			var oldId=curOld.oldId
-			_this.time=curOld.createTime
-			// _this.name=name
-			console.log(oldId)
+			var _this=this
+      // curRole 表示当前角色的数据，children属性是当前角色拥有的权限
+//       console.log('showRoleDialog', curOld.name)
+// 			_this.name=curOld.name
+			var oldId=_this.oldId
       // 展示对话框
       _this.isShowRoleDialog = true
-      			axios.post('step/selectStepDetail',{
-								'oldId': oldId
-							},
-      				{
-      					headers: {
-      						'content-type': 'application/json'
-      					},
-      					withCredentials: true
-      				}).then(function (response) {
-      					
-      				console.log(response)
-      				console.log('this',_this)
-      				_this.sleep=response.data.sleep
-      				_this.createTime=response.data.createTime
-      				_this.drawLine()
-      				console.log('bps',_this.bps)
-      			})
-      				.catch(function (error) {
-      					console.log(error)
-      				})
-      
+			axios.post('ratepre/selectRatepreDetail',{
+          "oldId":oldId
+        },
+				{
+					headers: {
+						'content-type': 'application/json'
+					},
+					withCredentials: true
+				}).then(function (response) {
+					
+				console.log(response)
+				console.log('this',_this)
+				_this.bps=response.data.bps
+				_this.hrs=response.data.hrs
+				_this.time=response.data.time
+				_this.createTimes=response.data.createTimes
+				_this.drawLine()
+				_this.drawLineTwo()
+				console.log('bps',_this.bps)
+			})
+				.catch(function (error) {
+					console.log(error)
+				})
+	  
+      // 暂存角色id
+      this.roleId = curOld.id
     },
 
     // 给角色分配权限
@@ -413,7 +401,7 @@ export default {
 	drawLine(){
 		// var echarts = require('echarts');
         // 基于准备好的dom，初始化echarts实例
-		var _this=this
+				var _this=this
 		this.$nextTick(()=>{
 			let myChart = _this.$echarts.init(document.getElementById('myChart'));
 					// let myChart =this.$echarts.init(this.$refs.myChart)
@@ -422,30 +410,49 @@ export default {
 			
 					// 绘制图表
 			        myChart.setOption({
-			            title: { text: _this.name+"  睡眠时间  "+_this.time },
+			            title: { text: _this.name+"  心率  "+_this.time+"时" },
 			            tooltip: {},
 			            xAxis: {
-			                data: _this.createTime
+			                data: _this.createTimes
 			            },
-			            yAxis: [{
-										type: 'value',
-												show: true,    //显示纵轴false-不显示，true-显示
-												name:'小时'   //这里是纵轴标题
-									}],
+			            yAxis: {},
 			            series: [{
 			                name: '销量',
-			                type: 'bar',
-			                data: _this.sleep,
-											itemStyle:{
-											           normal:{
-											                  color:'#99CCFF'
-											              }
-											          },
+			                type: 'line',
+			                data: _this.hrs
 			            }]
 			        });
 		});
         
-    }
+    },
+		
+		//  echartsTwo 
+		drawLineTwo(){
+			// var echarts = require('echarts');
+			var _this=this
+					// 基于准备好的dom，初始化echarts实例
+			this.$nextTick(()=>{
+				let myChart = this.$echarts.init(document.getElementById('myChartTwo'));
+						// let myChart =this.$echarts.init(this.$refs.myChart)
+				//         let dom = this.$refs.mychart;
+				// 		this.myChart = echarts.init(dom);
+						// 绘制图表
+								myChart.setOption({
+										title: { text: _this.name+"  血压  "+_this.time+"时" },
+										tooltip: {},
+										xAxis: {
+												data: _this.createTimes
+										},
+										yAxis: {},
+										series: [{
+												name: '销量',
+												type: 'line',
+												data: _this.bps
+										}]
+								});
+			});
+					
+			}
   }
 }
 

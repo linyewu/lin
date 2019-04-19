@@ -12,4 +12,6 @@ public interface OldPersonDao {
     int updateOldPerson(OldPerson oldPerson);
 
     int deleteOldPerson(int oldPersonId);
+
+    int updateOldPerson2(int oldId, int familyId);
 }

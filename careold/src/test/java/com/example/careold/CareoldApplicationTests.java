@@ -11,7 +11,16 @@ public class CareoldApplicationTests {
 
     @Test
     public void contextLoads() {
-    }
+        String s1="hello";
+        if(s1=="hello"){
+
+            System.out.println("s1 = \"hello\"");
+
+        }else {
+
+            System.out.println("s1 !=hello");
+        }
+        }
 
 }
 

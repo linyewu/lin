@@ -32,14 +32,14 @@
 					<el-table
 			:data="tableData"
 			style="width: 100%">
-			<el-table-column
+			<!-- <el-table-column
 			label=" "
 				type="index">
-			</el-table-column>
+			</el-table-column> -->
 			<el-table-column
 				label=" "
 				width="50"
-				prop="title">
+				prop="touPic">
 				<template slot-scope="scope">
 					<div style="width: 40px;height: 40px; ">
 						<img style="width: 40px;height: 40px;border-radius: 50%;" src="../assets/img/QQ图片20170101150550.jpg" />
@@ -51,23 +51,44 @@
 			<el-table-column
 				label=""
 				width="100"
-				prop="title">
+				prop="personName">
+			</el-table-column>
+			<el-table-column
+				label=""
+				width="80"
+				prop="saidH">
+				<span style="color: #C0C0C0;float: right;" @click="getview">评论:</span>
 			</el-table-column>
 			<el-table-column
 				label=""
 				width="180"
-				prop="time">
+				prop="said">
 			</el-table-column>
-			
+			<el-table-column
+				label=""
+				width="80"
+				prop="backH">
+				<span style="color: #C0C0C0;float: right;" @click="getview">回复:</span>
+			</el-table-column>
+			<el-table-column
+				label=""
+				width="180"
+				prop="back">
+			</el-table-column>
 			
 			<el-table-column label=""
 				width="400"
-				prop="time">
-				<template slot-scope="scope">
+				prop="good">
+				<template slot-scope="scope" @click="getview">
 					<!-- <span style="float: right;">赞</span> -->
-					<span v-if="good==0" style="color:red;float: right;">赞</span>
-					<span v-else style="color: #37B328;float: right;">赞</span>
+					<span v-if="scope.row.good==1" style="color:red;float: right;" @click="getview">赞</span>
+					<span v-else style="color: #37B328;float: right;" @click="getview">赞</span>
 				</template>
+			</el-table-column>
+			<el-table-column
+				label=""
+				width="180"
+				prop="niceCount">
 			</el-table-column>
 			</el-table>
 		</div>
@@ -80,13 +101,14 @@
 	
 	export default {
 		created(){
-			console.log('==============' + 'created' + '===================')
 			this.picId=this.$route.query.picId
 			this.textId=this.$route.query.textId
 			console.log(this.picId+'55555 '+this.textId)
+			this.familyPhone=localStorage.getItem('familyPhone')
+			console.log('phone')
+			console.log(this.familyPhone)
 			this.searchDetail()
-			// console.log(this.textform)
-			// console.log(this.textform.name+'------'+this.$route.query.textMain)
+			this.searchSaid()
 		},
 		data() {
 			return {
@@ -99,27 +121,30 @@
 					said: ''
 				},
 				tableData: [{
-				time: '2016-05-02',
-				title: '王小虎',
-				textmain: '上海市普陀区金沙江路 1518 弄'
+				said: 'hello',
+				back: '你好',
+				personName:'xiaohang',
+				niceCount: '10'
 				}, {
-				time: '2016-05-04',
-				title: '王小高',
-				textmain: '上海市普陀区金沙江路 1517 弄'
+				said: 'hello',
+				back: '你好啊',
+				personName:'xiaohang',
+				niceCount: '20'
 				}],
 				imgList:[
 // 				{url:require('../assets/img/1.jpg')},
 // 				{url:require('../assets/img/2.jpg')},
 // 				{url:require('../assets/img/image.jpg')}
 			  ],
-			  good:'1'
+			  good:'1',
+			  t: true,
+			  familyPhone: ''
 			};
 		},
 		methods: {
 			searchDetail(){
 				console.log(this.picId+'55555 '+this.textId)
 				var _this=this
-				
 				var params = {
 					'textId': this.textId
 				}
@@ -147,6 +172,41 @@
 				.catch(function (error) {
 					console.log(error)
 				})
+			},
+			searchSaid(){
+				var _this=this
+				var params = {
+					'textId': this.textId,
+					'familyPhone':this.familyPhone
+				}
+				console.log(params)
+				axios.post('said/select',params,
+				{
+					headers: {
+						'content-type': 'application/json'
+					},
+					withCredentials: true
+				}).then(function (response) {
+				console.log(response)
+				console.log('====================================')
+				_this.tableData = response.data.said2s
+				_this.total = response.data.said2s.length
+				
+				})
+				.catch(function (error) {
+					console.log(error)
+				})
+			},
+			getview(){
+				console.log('赞加一')
+				
+				if(this.t){
+					this.good='0'
+				}else{
+					this.good='1'
+				}
+				this.t=!this.t;
+				
 			},
 			onSubmit(){
 				

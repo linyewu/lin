@@ -33,4 +33,15 @@ public class PositionController {
 
     }
 
+    @ResponseBody
+    @PostMapping("/selectFamily")
+    public ListOrderedMap selectFamily(@RequestBody ListOrderedMap param){
+        ListOrderedMap result=new ListOrderedMap();
+        String oldId=param.get("oldId").toString();
+        List<PositionDto> positionDtos=positionDao.getPositionFamily(Integer.parseInt(oldId));
+        result.put("positionDtos",positionDtos);
+        return result;
+
+    }
+
 }

@@ -6,14 +6,14 @@
             Logo
           </div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="15">
           <h3>智慧养老手表管理系统</h3>
         </el-col>
-				<el-col :span="3" class="logout-desc">
+				<!-- <el-col :span="3" class="logout-desc">
 					<el-badge :value="4" class="item">
 					<el-button size="small" @click="open">不合格</el-button>
 					</el-badge>
-				</el-col>
+				</el-col> -->
 				
 				<el-col :span="3" class="user">
 				  <span class="welcome">欢迎使用</span>
@@ -65,8 +65,9 @@ export default {
 					this.$store.commit('clear_tabs', '/login')
           // 退出后，要跳转到登录页面
           this.$router.push('/login')
+					localStorage.clear();
           // 移除token
-          localStorage.removeItem('token')
+          // localStorage.removeItem('token')
         })
         .catch(() => {
           // 点击取消按钮

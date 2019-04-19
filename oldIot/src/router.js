@@ -2,33 +2,69 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './views/Login.vue'
 import Home from './views/Home.vue'
+import familyHome from './views/familyHome.vue'
 import main from './views/main.vue'
-import roles from './views/roles.vue'
+import familyMain from './views/familyMain.vue'
+// import roles from './views/roles.vue'
 import ratepre from './views/ratepre.vue'
-import rights from './views/rights.vue'
+import rateprefamily from './views/rateprefamily.vue'
+// import rights from './views/rights.vue'
 import annex from './views/annex.vue'
 import text from './views/text.vue'
 import textTwo from './views/textTwo.vue'
 import textMain from './views/textMain.vue'
 import step from './views/step.vue'
+import stepfamily from './views/stepfamily.vue'
 import warning from './views/warning.vue'
 import position from './views/position.vue'
+import positionfamily from './views/positionfamily.vue'
 import life from './views/life.vue'
 import watch from './views/watch.vue'
 import person from './views/person.vue'
 import customer from './views/customer.vue'
 import textOpt from './views/textOpt.vue'
 import family from './views/family.vue'
+import me from './views/me.vue'
+import saidOperation from './views/saidOperation.vue'
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
 	  {path: '/',
-	    redirect: '/home'
+	    redirect: '/login'
 	  },
     {path: '/login',
       component: Login
     },
+	{path: '/familyHome',
+	  component: familyHome,
+	  redirect: '/familyMain',
+	  children: [{
+				  path: '/familyMain',
+				  name: '家属首页',
+				  component: familyMain
+				},
+				{
+					path: '/rateprefamily',
+					name: '心率血压',
+					component: rateprefamily
+				},
+				{
+					path: '/stepfamily',
+					name: '睡眠步数',
+					component: stepfamily
+				},
+				{
+					path: '/positionfamily',
+					name: '位置信息',
+					component: positionfamily
+				},
+				{
+					path: '/me',
+					name: '个人中心',
+					component: me
+				}]
+	},
     { path: '/home',
       component: Home,
       redirect: '/main',
@@ -37,11 +73,6 @@ export default new Router({
 				  path: '/main',
 				  name: '首页',
 				  component: main
-				},
-				{
-				  path: '/roles',
-				  name: '角色列表',
-				  component: roles
 				},
 				{
 					path: '/ratepre',
@@ -67,11 +98,6 @@ export default new Router({
 					path: '/life',
 					name: '生活信息',
 					component: life
-				},
-				{
-				  path: '/rights',
-				  name: '权限列表',
-				  component: rights
 				},
 				{
 					path: '/watch',
@@ -117,8 +143,36 @@ export default new Router({
 				  path: '/family',
 				  name: '家属管理',
 				  component: family
+				},
+				{
+				  path: '/saidOperation',
+				  name: '评论管理',
+				  component: saidOperation
 				}
       ]
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+	console.log('进入')
+  if (to.path === '/login') {
+    // 是登录页面，直接进入到 要访问的登录页面
+    return next()
+  }
+
+  // 不是登录页面
+  const token = localStorage.getItem('token')
+  console.log("token",token)
+  if (token) {
+	  console.log('登陆过')
+    // 登录过：
+    next()
+  } else {
+	  console.log('未登录过')
+    // 没有登录过
+    next('/login')
+  }
+})
+
+export default router

@@ -16,7 +16,7 @@ public class StepJdbcDao implements StepDao {
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<StepDto>    getStepSleep(String name, String timeFirst, String timeLast) {
+    public List<StepDto>  getStepSleep(String name, String timeFirst, String timeLast) {
         String sql;
         List<StepDto> stepDtos=null;
         if((name==null || "".equals(name)) && (timeFirst==null || "".equals(timeFirst)) && (timeFirst==null || "".equals(timeFirst))){
@@ -34,9 +34,26 @@ public class StepJdbcDao implements StepDao {
     }
 
     @Override
-    public List<StepDto> getStepSleepDetail(String name) {
-        String sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id WHERE oldperson.name=? ORDER BY watch_day_info.create_time ASC LIMIT 30";
-        List<StepDto> stepDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(StepDto.class),name);
+    public List<StepDto> getStepSleepFamily(int oldId) {
+        String sql;
+        List<StepDto> stepDtos=null;
+        sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id WHERE oldperson.old_id=?  GROUP BY oldperson.old_id  ORDER BY watch_day_info.create_time DESC";
+        stepDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(StepDto.class),oldId);
+
+        return stepDtos;
+    }
+
+    @Override
+    public List<String> getSleepBadCount() {
+        String sql="select device_id deviceId from watch_day_info where sleep_sate='1' group by device_id";
+        List<String> deviceIdList=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(String.class));
+        return deviceIdList;
+    }
+
+    @Override
+    public List<StepDto> getStepSleepDetail(int oldId) {
+        String sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id WHERE oldperson.old_id=? ORDER BY watch_day_info.create_time ASC LIMIT 30";
+        List<StepDto> stepDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(StepDto.class),oldId);
         return stepDtos;
     }
 }

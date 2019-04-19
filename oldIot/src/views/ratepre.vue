@@ -63,7 +63,8 @@
       
       <el-table-column type="index" width="150" align="center"></el-table-column>
       <el-table-column prop="name" label="姓名" width="180" align="center"></el-table-column>
-      <el-table-column prop="sex" label="性别" width="270" align="center"></el-table-column>
+			<el-table-column prop="oldId" style="display: none;" label="id" width="180" align="center"></el-table-column>
+      <el-table-column prop="sex" label="性别" width="150" align="center"></el-table-column>
 			<el-table-column prop="preState" label="血压状态" width="180" align="center">
 				<template slot-scope="scope">
                   <span v-if="scope.row.preState==1" style="color:red">异常</span>
@@ -358,12 +359,12 @@ export default {
     showRoleDialog (curOld) {
 			var _this=this
       // curRole 表示当前角色的数据，children属性是当前角色拥有的权限
-      console.log('showRoleDialog', curOld.name)
-			_this.name=curOld.name
+      console.log('showRoleDialog', curOld.oldId)
+			_this.oldId=curOld.oldId
       // 展示对话框
       _this.isShowRoleDialog = true
 			axios.post('ratepre/selectRatepreDetail',{
-          'name': curOld.name
+          'oldId': curOld.oldId
         },
 				{
 					headers: {
@@ -412,7 +413,11 @@ export default {
 			            xAxis: {
 			                data: _this.createTimes
 			            },
-			            yAxis: {},
+			            yAxis:[{
+										type: 'value',
+												show: true,    //显示纵轴false-不显示，true-显示
+												name:'次/每分钟'   //这里是纵轴标题
+									}],
 			            series: [{
 			                name: '销量',
 			                type: 'line',
@@ -440,7 +445,11 @@ export default {
 										xAxis: {
 												data: _this.createTimes
 										},
-										yAxis: {},
+										yAxis: [{
+										type: 'value',
+												show: true,    //显示纵轴false-不显示，true-显示
+												name:'mmHg'   //这里是纵轴标题
+									}],
 										series: [{
 												name: '销量',
 												type: 'line',

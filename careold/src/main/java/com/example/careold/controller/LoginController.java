@@ -5,6 +5,7 @@ import com.example.careold.dao.FamilyDao;
 import com.example.careold.dao.UserDao;
 import com.example.careold.dao.WatchInfoDao;
 import com.example.careold.domain.Family;
+import com.example.careold.domain.FamilyDto;
 import com.example.careold.domain.Users;
 import com.example.careold.domain.WatchDto;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -51,7 +52,7 @@ public class LoginController {
         for(int i=0;i<families.size();i++){
             if(families.get(i).getFamilyPhone().equals(phone)){
                 if(families.get(i).getFamilyPassword().equals(password)){
-                    Family family=familyDao.findFamilyByPhone(phone);
+                    FamilyDto family=familyDao.findFamilyByPhone(phone);
                     result.put("family",family);
                     result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
                     return result;

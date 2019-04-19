@@ -1,10 +1,9 @@
 <template>
   <div class="roles">
     <!-- 查询和添加 -->
-    <div class="sys-research">
+    <!-- <div class="sys-research">
       <el-row class="row-search">
         <el-col :span="8">
-          <!-- 查询 -->
           <el-input
             placeholder="请输入搜索内容"
             v-model="searchText"
@@ -15,11 +14,8 @@
               @click="searchWatchs"></el-button>
           </el-input>
         </el-col>
-        <el-col :span="4">
-          <el-button plain @click="watchDialogVisible = true">添加手表</el-button>
-        </el-col>
       </el-row>
-    </div>
+    </div> -->
     <!-- start 添加角色弹窗 -->
     <el-dialog
       title="角色添加"
@@ -54,28 +50,28 @@
     <!-- end 添加角色弹窗 -->
     <!-- start 编辑角色弹窗 -->
     <el-dialog
-      title="角色编辑"
+      title="评论回复"
       :visible.sync="watchEditDialogVisible"
       width="30%">
       <el-form label-width="80px" :model="watchEditForm">
         <!-- <el-form-item label="老人姓名" prop="name">
         <el-input v-model="watchEditForm.name"></el-input>
         </el-form-item> -->
-        <el-form-item label="手表Id" prop="deviceId">
-        <el-input v-model="watchEditForm.deviceId"></el-input>
+        <el-form-item label="" prop="saidId" style="display: none; ">
+        <el-input v-model="watchEditForm.saidId"></el-input>
         </el-form-item>
-        <el-form-item label="血压高值" prop="bpf">
-        <el-input v-model="watchEditForm.bpf"></el-input>
+        <el-form-item label="评论" prop="said" >
+        <el-input v-model="watchEditForm.said" disabled="disabled"></el-input>
         </el-form-item>
-        <el-form-item label="血压低值" prop="bpl">
-        <el-input v-model="watchEditForm.bpl"></el-input>
+        <el-form-item label="回复" prop="back">
+        <el-input v-model="watchEditForm.back"></el-input>
         </el-form-item>
-        <el-form-item label="心率高值" prop="hrf">
+        <!-- <el-form-item label="心率高值" prop="hrf">
         <el-input v-model="watchEditForm.hrf"></el-input>
         </el-form-item>
         <el-form-item label="心率低值" prop="hrl">
         <el-input v-model="watchEditForm.hrl"></el-input>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
       <el-button @click="watchEditDialogVisible = false">取 消</el-button>
@@ -85,22 +81,27 @@
     <!-- end 编辑角色弹窗 -->
     <!-- 表格 -->
     <el-table :data="watchsList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
-    style="width: 100%" border>
+    style="width: 100%" >
     <!-- 可展开行 -->
       
-      <el-table-column prop="deviceId" label="手表ID" width="100" align="center"></el-table-column>
-      <el-table-column prop="name" label="佩戴老人" width="160" align="center"></el-table-column>
-      <el-table-column prop="bpf" label="血压高值" width="160" align="center"></el-table-column>
-			<el-table-column prop="bpl" label="血压低值" width="160" align="center"></el-table-column>
-			<el-table-column prop="hrf" label="心率高值" width="160" align="center"></el-table-column>
-			<el-table-column prop="hrl" label="心率低值" width="160" align="center"></el-table-column>
-			<el-table-column prop="opTime" label="启用时间" width="160" align="center"></el-table-column>
+      <el-table-column prop="touPic" label="" width="100" align="center">
+		  <template slot-scope="scope">
+		    <img style="width: 60px;height: 60px;border-radius: 50%;" :src="scope.row.touPic" />
+		  </template>
+	  </el-table-column>
+      <el-table-column prop="personName" label="作者" width="100" align="center"></el-table-column>
+	  <!-- <el-table-column prop="saidId" style="display: none;" label="作者" width="160" align="center"></el-table-column> -->
+      <el-table-column prop="said" label="评论" width="160" align="center"></el-table-column>
+			<el-table-column prop="saidTime" label="评论时间" width="160" align="center"></el-table-column>
+			<el-table-column prop="back" label="回复" width="160" align="center"></el-table-column>
+			<el-table-column prop="backTime" label="回复时间" width="160" align="center"></el-table-column>
+			<el-table-column prop="title" label="文章标题" width="160" align="center"></el-table-column>
 	  <!-- <el-table-column prop="fee" label="话费余额" width="140" align="center"></el-table-column>
 	  <el-table-column prop="power" label="电量" width="140" align="center"></el-table-column> -->
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button size="mini" plain type="primary" icon="el-icon-edit"
-                     @click="handleEditwatch(scope.$index, scope.row)">编辑
+                     @click="handleEditwatch(scope.$index, scope.row)">回复
           </el-button>
           <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="deleteRole(scope.row.deviceId)">删除
           </el-button>
@@ -169,24 +170,23 @@ export default {
 				hrl: ''
       },
       watchEditForm: {
-        deviceId: '',
-        bpf: '',
-        bpl: '',
-        hrf: '',
-        hrl: ''
+        saidId: '',
+        said: '',
+        back: ''
       },
       popoverRole: true,
       total: 0,
       pageSize: 10,
       currentPage: 1,
       watchsList: [{
-		  deviceId:'1',
-		  name:'小黄',
-		  bpf:'60',
-		  bpl:'120',
-		  hrf:'60',
-		  hrl:'120',
-			opTime: '2019-02-03'
+		  saidId:'1',
+		  touPic:require('../assets/img/QQ图片20170101150550.jpg'),
+		  personName:'1',
+		  said:'小黄',
+		  saidTime:'60',
+		  back:'120',
+		  backTime:'60',
+		  title:'120'
 	  }],
       // 控制分配权限对话框的展示和隐藏
       isShowRoleDialog: false,
@@ -205,7 +205,7 @@ export default {
     }
   },
   created () {
-    this.searchWatchs()
+    // this.searchWatchs()
   },
   methods: {
     // 查询

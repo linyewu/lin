@@ -44,6 +44,13 @@ public class OldPersonJdbcDao implements OldPersonDao {
     }
 
     @Override
+    public int updateOldPerson2(int oldId, int familyId) {
+        String sql="update oldperson set family_id=? where old_id=?";
+        int rows=jdbcTemplate.update(sql,familyId,oldId);
+        return rows;
+    }
+
+    @Override
     public int deleteOldPerson(int oldPersonId) {
         String sql="delete from oldperson where old_id=?";
         int rows=jdbcTemplate.update(sql,oldPersonId);

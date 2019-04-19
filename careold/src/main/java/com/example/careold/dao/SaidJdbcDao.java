@@ -1,6 +1,8 @@
 package com.example.careold.dao;
 
 import com.example.careold.domain.Said;
+import com.example.careold.domain.Said2;
+import com.example.careold.domain.SaidDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,17 +17,24 @@ public class SaidJdbcDao implements SaidDao {
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Said> getSaid(int textid) {
+    public List<Said2> getSaid(int textid) {
         String sql="";
-        List<Said> saids=null;
+        List<Said2> said2s=null;
         if(textid==0){
             sql="SELECT * FROM said ";
-            saids=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(Said.class));
+            said2s=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(Said2.class));
         }else{
             sql="SELECT * FROM said WHERE text_id=?";
-            saids=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(Said.class),textid);
+            said2s=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(Said2.class),textid);
         }
-        return saids;
+        return said2s;
+    }
+
+    @Override
+    public List<SaidDto> getSaidForAdmin() {
+        String sql="select said_id,said,back,said_time,back_time,person_name,tou_pic,title from said inner join text on said.text_id=text.text_id";
+        List<SaidDto> saidDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(SaidDto.class));
+        return saidDtos;
     }
 
     @Override
@@ -44,8 +53,15 @@ public class SaidJdbcDao implements SaidDao {
 
     @Override
     public int updateSaid(Said said) {
-        String sql="UPDATE said SET back=?,back_time=?,nice_count=? WHERE said_id=?";
-        int rows=jdbcTemplate.update(sql,said.getBack(),said.getBackTime(),said.getNiceCount(),said.getSaidId());
+        String sql="UPDATE said SET back=?,back_time=? WHERE said_id=?";
+        int rows=jdbcTemplate.update(sql,said.getBack(),said.getBackTime(),said.getSaidId());
         return rows;
+    }
+
+    @Override
+    public List<String> isSaid(int saidId, String phone) {
+        String sql="select phone from nice_count where said_id=? and phone=?";
+        List<String> phonebic=jdbcTemplate.queryForList(sql,String.class,saidId,phone);
+        return phonebic;
     }
 }

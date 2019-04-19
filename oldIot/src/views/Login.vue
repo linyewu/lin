@@ -58,6 +58,9 @@ export default {
         password: ''
       },
 			user:'',
+			familyTouPic:'',
+			familyPhone:'',
+			oldId:'',
       // 表单验证规则
       rules: {
         phone: [
@@ -88,13 +91,24 @@ export default {
 					console.log(response)
 					if(response.data.users1!=null){
 						_this.user=response.data.users1.userName
-						console.log(_this.user+'----')
+						console.log("管理员")
+						localStorage.setItem('token', true)
+						_this.$router.push({ path: '/home' })
 					}else{
 						_this.user=response.data.family.familyName
-						console.log(_this.user+'====')
+						_this.familyTouPic=response.data.family.familyTouPic
+						_this.familyPhone=response.data.family.familyPhone
+						_this.oldId=response.data.family.oldId
+						console.log("家属")
+						console.log(_this.oldId)
+						console.log(_this.familyTouPic+'----'+_this.familyPhone+'===='+_this.oldId)
+						localStorage.setItem('oldIdfamily', _this.oldId)
+						localStorage.setItem('familyPhone', _this.familyPhone)
+						localStorage.setItem('token', true)
+						_this.$router.push({ path: '/familyHome' })
 					}
 					localStorage.setItem('user_name', _this.user)
-	      _this.$router.push({ path: '/home' })
+	      
 	  console.log(response.data.returnCode+'返回')
 	    })
 	      .catch(function (error) {

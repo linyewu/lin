@@ -8,7 +8,9 @@ public interface RatepreDao {
 
     List<RatepreDto> getRatepre(String name,String timeFirst,String timeLast);
 
-    List<RatepreDto> getRatepreDetial(String name);
+    public List<RatepreDto> getRatepreFamily(int old_id, String timeFirst, String timeLast);
+
+    List<RatepreDto> getRatepreDetial(int oldId);
 
     List<String> getRateCount();
 

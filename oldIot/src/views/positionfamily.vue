@@ -1,10 +1,10 @@
 <template>
   <div class="roles">
     <!-- 查询和添加 -->
-    <div class="sys-research">
+    <!-- <div class="sys-research">
       <el-row class="row-search">
+		  
         <el-col :span="8">
-          <!-- 查询 -->
           <el-input
             placeholder="请输入搜索内容"
             v-model="searchText"
@@ -12,104 +12,80 @@
             <el-button
               slot="append"
               icon="el-icon-search"
-              @click="searchWatchs"></el-button>
+              @click="searchposition"></el-button>
           </el-input>
         </el-col>
-        <el-col :span="4">
-          <el-button plain @click="watchDialogVisible = true">添加手表</el-button>
-        </el-col>
+        
       </el-row>
-    </div>
+    </div> -->
     <!-- start 添加角色弹窗 -->
     <el-dialog
       title="角色添加"
-      :visible.sync="watchDialogVisible"
+      :visible.sync="roleDialogVisible"
       @close="closeRoleAddDialog"
       width="30%">
-      <el-form label-width="80px" :model="watchForm"  ref="addwatchFormRef">
-        <!-- <el-form-item label="老人姓名" prop="name">
-          <el-input v-model="watchForm.name"></el-input>
-        </el-form-item> -->
-        <el-form-item label="手表Id" prop="deviceId">
-          <el-input v-model="watchForm.deviceId"></el-input>
+      <el-form label-width="80px" :model="roleForm"  ref="addRoleFormRef">
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="roleForm.roleName"></el-input>
         </el-form-item>
-		<el-form-item label="血压高值" prop="bpf">
-		<el-input v-model="watchForm.bpf"></el-input>
-		</el-form-item>
-		<el-form-item label="血压低值" prop="bpl">
-		<el-input v-model="watchForm.bpl"></el-input>
-		</el-form-item>
-		<el-form-item label="心率高值" prop="hrf">
-		<el-input v-model="watchForm.hrf"></el-input>
-		</el-form-item>
-		<el-form-item label="心率低值" prop="hrl">
-		<el-input v-model="watchForm.hrl"></el-input>
-		</el-form-item>
+        <el-form-item label="角色描述" prop="roleDesc">
+          <el-input v-model="roleForm.roleDesc"></el-input>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-      <el-button @click="watchDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="addWatchs('addwatchFormRef')">确 定</el-button>
+      <el-button @click="roleDialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="addRoles('addRoleFormRef')">确 定</el-button>
     </span>
     </el-dialog>
     <!-- end 添加角色弹窗 -->
     <!-- start 编辑角色弹窗 -->
     <el-dialog
       title="角色编辑"
-      :visible.sync="watchEditDialogVisible"
+      :visible.sync="roleEditDialogVisible"
       width="30%">
-      <el-form label-width="80px" :model="watchEditForm">
-        <!-- <el-form-item label="老人姓名" prop="name">
-        <el-input v-model="watchEditForm.name"></el-input>
-        </el-form-item> -->
-        <el-form-item label="手表Id" prop="deviceId">
-        <el-input v-model="watchEditForm.deviceId"></el-input>
+      <el-form label-width="80px" :model="roleEditForm">
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="roleEditForm.roleName"></el-input>
         </el-form-item>
-        <el-form-item label="血压高值" prop="bpf">
-        <el-input v-model="watchEditForm.bpf"></el-input>
-        </el-form-item>
-        <el-form-item label="血压低值" prop="bpl">
-        <el-input v-model="watchEditForm.bpl"></el-input>
-        </el-form-item>
-        <el-form-item label="心率高值" prop="hrf">
-        <el-input v-model="watchEditForm.hrf"></el-input>
-        </el-form-item>
-        <el-form-item label="心率低值" prop="hrl">
-        <el-input v-model="watchEditForm.hrl"></el-input>
+        <el-form-item label="角色描述" prop="roleDesc">
+          <el-input v-model="roleEditForm.roleDesc"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-      <el-button @click="watchEditDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="editWatch">确 定</el-button>
+      <el-button @click="roleEditDialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="editRole">确 定</el-button>
     </span>
     </el-dialog>
     <!-- end 编辑角色弹窗 -->
     <!-- 表格 -->
-    <el-table :data="watchsList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+    <el-table :data="positionList"
     style="width: 100%" border>
     <!-- 可展开行 -->
       
-      <el-table-column prop="deviceId" label="手表ID" width="100" align="center"></el-table-column>
-      <el-table-column prop="name" label="佩戴老人" width="160" align="center"></el-table-column>
-      <el-table-column prop="bpf" label="血压高值" width="160" align="center"></el-table-column>
-			<el-table-column prop="bpl" label="血压低值" width="160" align="center"></el-table-column>
-			<el-table-column prop="hrf" label="心率高值" width="160" align="center"></el-table-column>
-			<el-table-column prop="hrl" label="心率低值" width="160" align="center"></el-table-column>
-			<el-table-column prop="opTime" label="启用时间" width="160" align="center"></el-table-column>
-	  <!-- <el-table-column prop="fee" label="话费余额" width="140" align="center"></el-table-column>
-	  <el-table-column prop="power" label="电量" width="140" align="center"></el-table-column> -->
+      <el-table-column  width="100" type="index" align="center"></el-table-column>
+			<el-table-column prop="oldId" style="display: none;" label="id" width="180" align="center"></el-table-column>
+      <el-table-column prop="name" label="姓名" width="140" align="center"></el-table-column>
+      <el-table-column prop="sex" label="性别" width="100" align="center"></el-table-column>
+	  <el-table-column prop="status" label="是否摔倒" width="150" align="center">
+		  <template slot-scope="scope">
+		    <span v-if="scope.row.status==1" style="color:red">摔倒</span>
+		    <span v-else style="color: #37B328">正常</span>
+		  </template>
+	  </el-table-column>
+	  <el-table-column prop="lng" label="经度" width="180" align="center"></el-table-column>
+	  <el-table-column prop="lat" label="纬度" width="180" align="center"></el-table-column>
+	  <el-table-column prop="beTime" label="时间" width="auto" align="center"></el-table-column>
       <el-table-column label="操作" align="center">
-        <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit"
-                     @click="handleEditwatch(scope.$index, scope.row)">编辑
-          </el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="deleteRole(scope.row.deviceId)">删除
-          </el-button>
-          
-        </template>
+      	<template slot-scope="scope">
+      		
+      		<el-button size="mini" plain type="success" icon="el-icon-check" @click="showRoleDialog(scope.row)">
+      			详细情况
+      		</el-button>
+      	</template>
       </el-table-column>
     </el-table>
     <!-- start 分页 -->
-    <div style="margin-top: 10px;text-align: center">
+    <!-- <div style="margin-top: 10px;text-align: center">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="changePage"
@@ -118,7 +94,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
       </el-pagination>
-    </div>
+    </div> -->
     <!-- end 分页 -->
     <!-- 分配权限对话框 -->
     <el-dialog title="角色授权" :visible.sync="isShowRoleDialog">
@@ -132,61 +108,66 @@
           :props="defaultProps"
           :default-expand-all="true" 是否默认展开所有节点
       -->
-      <el-tree
-        ref="tree"
-        :data="rightsTree"
-        :default-expand-all="true"
-        node-key="id"
-        show-checkbox
-        :props="defaultProps"
-      >
-      </el-tree>
-
+      
+	  
+	  <!--start echarts表格-->
+	  <div id="myChart" ref="mychart" :style="{width: '300px', height: '300px'}"></div>
+		<!--end echarts表格-->
       <div slot="footer" class="dialog-footer">
         <el-button @click="isShowRoleDialog = false">取 消</el-button>
         <el-button type="primary" @click="assignRights">确 定</el-button>
       </div>
     </el-dialog>
+	
+	<div>
+		<!--地图-->
+		<div id="allmap"></div>
+		<div id="r-result">
+			经度: <input id="longitude" v-model="lng" type="text" style="width:100px; margin-right:10px;" />
+			纬度: <input id="latitude" v-model="lat" type="text" style="width:100px; margin-right:10px;" />
+			<input type="button" value="查询" @click="theLocation()" />
+		</div>
+	</div>
   </div>
-
+	
 </template>
 
 <script>
 // 引入
 import axios from 'axios'
 
+import echarts from 'echarts'
+
+import BMap from 'BMap'
+
 export default {
   data () {
     return {
       searchText: '', // 角色查询内容
-      watchDialogVisible: false,
-      watchEditDialogVisible: false,
-      watchForm: {
-        deviceId: '',
-				bpf: '',
-				bpl: '',
-				hrf: '',
-				hrl: ''
+      roleDialogVisible: false,
+      roleEditDialogVisible: false,
+      roleForm: {
+        roleName: '',
+        roleDesc: ''
       },
-      watchEditForm: {
-        deviceId: '',
-        bpf: '',
-        bpl: '',
-        hrf: '',
-        hrl: ''
+			value6: '',
+      roleEditForm: {
+        roleId: '',
+        roleName: '',
+        roleDesc: ''
       },
       popoverRole: true,
       total: 0,
       pageSize: 10,
       currentPage: 1,
-      watchsList: [{
-		  deviceId:'1',
-		  name:'小黄',
-		  bpf:'60',
-		  bpl:'120',
-		  hrf:'60',
-		  hrl:'120',
-			opTime: '2019-02-03'
+      positionList: [{
+		oldId:'1',
+		name:'小黄',
+		sex:'男',
+		status: '1',
+		lng:'121.14598',
+		lat: '31.160186',
+		beTime:'2019-02-20 15:34:56'
 	  }],
       // 控制分配权限对话框的展示和隐藏
       isShowRoleDialog: false,
@@ -201,42 +182,61 @@ export default {
         label: 'authName'
       },
       // 当前被分配权限的角色id
-      roleId: -1
+      roleId: -1,
+			lng: '121.14598',
+			lat: '31.160186'
     }
   },
   created () {
-    this.searchWatchs()
+	  
+	  // let myChart = this.$echarts.init(document.getElementById('myChart'))
+		this.oldId=localStorage.getItem('oldIdfamily')
+    this.searchposition()
+		
+	// this.drawLine()
+  },
+  updated() {
+	  
+	  // this.drawLine()
+     // this.getAttendanceData();
+  },
+  mounted(){
+	  this.ready()
+		// this.theLocation()
+    // this.drawLine()
   },
   methods: {
     // 查询
-    searchWatchs () {
+    searchposition () {
       var _this = this
-        var oldName = _this.searchText
-        
-        axios.post('watchInfo/select',
-          {
-            'oldName': oldName === '' ? '' : _this.searchText
+      var oldId = _this.oldId
+      console.log(_this.oldId)
+
+      axios.post('position/selectFamily',
+        {
+          "oldId":oldId
+        },
+        {
+          headers: {
+            'content-type': 'application/json'
           },
-          {
-            headers: {
-              'content-type': 'application/json'
-            },
-            withCredentials: true
-          }).then(function (response) {
-          _this.watchsList = response.data.watchDtos
-          _this.total = response.data.watchDtos.length
-      console.log(_this.watchsList)
+          withCredentials: true
+        }).then(function (response) {
+        console.log(response)
+        _this.positionList = response.data.positionDtos
+        _this.total = response.data.roles.length
+      })
+        .catch(function (error) {
+          console.log(error)
         })
-          .catch(function (error) {
-            console.log(error)
-          })
-      
     },
     // 添加角色
-    addWatchs () {
+    addRoles () {
       var _this = this
-      axios.post('watchInfo/add',
-        _this.watchForm,
+      axios.post('roles/save',
+        {
+          'roleName': _this.roleForm.roleName
+        },
         {
           headers: {
             'content-type': 'application/json'
@@ -245,16 +245,16 @@ export default {
         }).then(function (response) {
         console.log(response)
         if (response.data.returnCode === '1111') {
-          _this.watchDialogVisible = false
-          _this.searchWatchs()
+          _this.roleDialogVisible = false
+          _this.searchposition()
           _this.$message({
             type: 'success',
-            message: '添加手表成功'
+            message: '添加角色成功'
           })
         } else {
           _this.$message({
             type: 'error',
-            message: '添加手表失败'
+            message: '添加角色失败'
           })
         }
       })
@@ -265,12 +265,12 @@ export default {
     // 关闭添加角色对话框
     closeRoleAddDialog () {
       // 重置表单
-      this.$refs.addwatchFormRef.resetFields()
+      this.$refs.addRoleFormRef.resetFields()
     },
     // 编辑
-    editWatch () {
+    editRole () {
       var _this = this
-      axios.post('watchInfo/update', _this.watchEditForm,
+      axios.post('roles/update', _this.roleEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -279,16 +279,16 @@ export default {
         }).then(function (response) {
         console.log(response)
         if (response.data.returnCode === '1111') {
-          _this.watchEditDialogVisible = false
+          _this.roleEditDialogVisible = false
           _this.$message({
             type: 'success',
-            message: '编辑手表信息成功'
+            message: '编辑角色信息成功'
           })
-          _this.searchWatchs()
+          _this.searchposition()
         } else {
           _this.$message({
             type: 'error',
-            message: '编辑手表信息失败'
+            message: '编辑角色信息失败'
           })
         }
       })
@@ -296,9 +296,30 @@ export default {
           console.log(error)
         })
     },
+	// 用经纬度设置地图中心点
+	ready(){
+		console.log('ooooo')
+		// 百度地图API功能
+	var map = new BMap.Map("allmap");
+	map.centerAndZoom(new BMap.Point(121.14598,31.160186),45);
+	map.enableScrollWheelZoom(true); 
+	},
+	theLocation(){
+		console.log('iop')
+		var map = new BMap.Map("allmap");
+		map.centerAndZoom(new BMap.Point(121.14598,31.160186),45);
+		map.enableScrollWheelZoom(true);
+		if(document.getElementById("longitude").value != "" && document.getElementById("latitude").value != ""){
+			map.clearOverlays(); 
+			var new_point = new BMap.Point(document.getElementById("longitude").value,document.getElementById("latitude").value);
+			var marker = new BMap.Marker(new_point);  // 创建标注
+			map.addOverlay(marker);              // 将标注添加到地图中
+			map.panTo(new_point);      
+		}
+	},
     // 删除
-    async deleteRole (deviceId) {
-      console.log(deviceId)
+    async deleteRole (roleName) {
+      console.log(roleName)
 
       var _this = this
       try {
@@ -307,8 +328,8 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         })
-        console.log(deviceId)
-        axios.post('watchInfo/delete', {'deviceId': deviceId},
+        console.log(roleName)
+        axios.post('roles/delete', {'roleName': roleName},
           {
             headers: {
               'content-type': 'application/json'
@@ -322,7 +343,7 @@ export default {
               message: '删除信息成功'
             })
           }
-          _this.searchWatchs()
+          _this.searchposition()
         })
           .catch(function (error) {
             console.log(error)
@@ -336,9 +357,9 @@ export default {
       }
     },
     // 编辑信息
-    handleEditwatch (index, row) {
-      this.watchEditDialogVisible = true
-      this.watchEditForm = Object.assign({}, row) // 解决修改弹出框数据时，表格数据会发生同步改变
+    handleEditRole (index, row) {
+      this.roleEditDialogVisible = true
+      this.roleEditForm = Object.assign({}, row) // 解决修改弹出框数据时，表格数据会发生同步改变
       // console.log(row)
     },
     handleSizeChange (val) {
@@ -357,19 +378,26 @@ export default {
     showRoleDialog (curRole) {
       // curRole 表示当前角色的数据，children属性是当前角色拥有的权限
       console.log('showRoleDialog', curRole)
+			var _this=this
       // 展示对话框
-      this.isShowRoleDialog = true
-      // 暂存角色id
-      this.roleId = curRole.id
+      // _this.isShowRoleDialog = true
+      _this.lng=curRole.lng
+			_this.lat=curRole.lat
+			console.log(curRole.lng)
+			this.theLocation()
     },
 
     // 给角色分配权限
     async assignRights () {
     }
+	
+
   }
 }
 
 </script>
+
+
 
 <style lang="less" scoped>
   .sys-research {
@@ -393,5 +421,7 @@ export default {
   .level3 {
     margin: 3px;
   }
+		#allmap{height:500px;width:100%;}
+		#r-result{width:100%; font-size:14px;}
 
 </style>

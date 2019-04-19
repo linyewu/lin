@@ -10,6 +10,15 @@ public class FamilyDto {
     private String familyPassword;
     private String name;
     private Integer oldId;
+    private String familyTouPic;
+
+    public String getFamilyTouPic() {
+        return familyTouPic;
+    }
+
+    public void setFamilyTouPic(String familyTouPic) {
+        this.familyTouPic = familyTouPic;
+    }
 
     public Integer getFamilyId() {
         return familyId;

@@ -2,9 +2,11 @@ package com.example.careold.controller;
 
 import com.example.careold.common.ReturnCodeUtil;
 import com.example.careold.dao.FamilyDao;
+import com.example.careold.dao.OldPersonDao;
 import com.example.careold.dao.UserDao;
 import com.example.careold.domain.Family;
 import com.example.careold.domain.FamilyDto;
+import com.example.careold.domain.OldDto2;
 import com.example.careold.domain.Users;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class FamilyController {
 
     @Autowired
     FamilyDao familyDao;
+
+    @Autowired
+    OldPersonDao oldPersonDao;
 
     @ResponseBody
     @PostMapping("/select")
@@ -41,7 +46,10 @@ public class FamilyController {
         String familyRelation=params.get("familyRelation").toString();
         String familySex=params.get("familySex").toString();
         String familyPhone=params.get("familyPhone").toString();
+        String oldPhone=params.get("oldPhone").toString();
         String familyAddress=params.get("familyAddress").toString();
+
+
         Family family=new Family();
         family.setFamilyAddress(familyAddress);
         family.setFamilyPhone(familyPhone);
@@ -49,6 +57,9 @@ public class FamilyController {
         family.setFamilyName(familyName);
         family.setFamilyRelation(familyRelation);
         int row=familyDao.save(family);
+        OldDto2 oldDto2=familyDao.findOldDto2ByPhone(oldPhone);
+        String familyId=familyDao.findFamilyIdByPhone(familyPhone);
+        oldPersonDao.updateOldPerson2(oldDto2.getOldId(),Integer.parseInt(familyId));
         if(row==1){
             result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
             return result;
@@ -56,4 +67,45 @@ public class FamilyController {
         result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.falseCode);
         return result;
     }
+
+    @ResponseBody
+    @PostMapping("/updateFamily")
+    public ListOrderedMap updateFamily(@RequestBody ListOrderedMap params){
+        ListOrderedMap result=new ListOrderedMap();
+        String familyName=params.get("familyName").toString();
+        String familyRelation=params.get("familyRelation").toString();
+        String familySex=params.get("familySex").toString();
+        String familyPhone=params.get("familyPhone").toString();
+        String familyAddress=params.get("familyAddress").toString();
+        String familyId=params.get("familyId").toString();
+        Family family=new Family();
+        family.setFamilyAddress(familyAddress);
+        family.setFamilyPhone(familyPhone);
+        family.setFamilySex(familySex);
+        family.setFamilyName(familyName);
+        family.setFamilyRelation(familyRelation);
+        family.setFamilyId(Integer.parseInt(familyId));
+        int row=familyDao.update(family);
+        if(row==1){
+            result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
+            return result;
+        }
+        result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.falseCode);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/deleteFamily")
+    public ListOrderedMap deleteFamily(@RequestBody ListOrderedMap params){
+        ListOrderedMap result=new ListOrderedMap();
+        String familyId=params.get("familyId").toString();
+        int row=familyDao.delete(familyId);
+        if(row==1){
+            result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
+            return result;
+        }
+        result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.falseCode);
+        return result;
+    }
+
 }

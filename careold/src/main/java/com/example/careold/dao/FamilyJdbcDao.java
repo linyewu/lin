@@ -2,6 +2,7 @@ package com.example.careold.dao;
 
 import com.example.careold.domain.Family;
 import com.example.careold.domain.FamilyDto;
+import com.example.careold.domain.OldDto2;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -54,10 +55,24 @@ public class FamilyJdbcDao extends JdbcCom implements FamilyDao {
     }
 
     @Override
-    public Family findFamilyByPhone(String phone) {
-        String sql="select * from family where family_phone = ?";
-        Family family=jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(Family.class),phone);
-        return family;
+    public FamilyDto findFamilyByPhone(String phone) {
+        String sql="select old_id,name,oldperson.family_id,family_name,family_relation,family_phone,family_sex,family_address,family_tou_pic from oldperson INNER JOIN family on family.family_id=oldperson.family_id where family_phone = ?";
+        FamilyDto familyDto=jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(FamilyDto.class),phone);
+        return familyDto;
+    }
+
+    @Override
+    public String findFamilyIdByPhone(String phone) {
+        String sql="select  family_id from family where family_phone = ?";
+        String familyId=jdbcTemplate.queryForObject(sql,String.class,phone);
+        return familyId;
+    }
+
+    @Override
+    public OldDto2 findOldDto2ByPhone(String phone) {
+        String sql="select old_id,name from oldperson where phone=?";
+        OldDto2 oldDto2=jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(OldDto2.class),phone);
+        return oldDto2;
     }
 
     @Override

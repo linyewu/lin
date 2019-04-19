@@ -31,10 +31,24 @@ public class RatepreJdbcDao implements RatepreDao{
     }
 
     @Override
-    public List<RatepreDto> getRatepreDetial(String name) {
-        String sql="SELECT hr,bp,ratepre.`create_time` FROM oldperson INNER JOIN watch_info ON oldperson.device_id=watch_info.device_id INNER JOIN ratepre ON watch_info.`device_id`=ratepre.`device_id` WHERE oldperson.name=? ORDER BY ratepre.create_time ASC LIMIT 30";
+    public List<RatepreDto> getRatepreFamily(int oldId, String timeFirst, String timeLast) {
+        String sql;
         List<RatepreDto> ratepreDtos=null;
-        ratepreDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(RatepreDto.class),name);
+        if((timeFirst==null || "".equals(timeFirst)) && (timeFirst==null || "".equals(timeFirst))){
+            sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,rate_state,pre_state,ratepre.`create_time` FROM oldperson INNER JOIN watch_info ON oldperson.device_id=watch_info.device_id INNER JOIN ratepre ON watch_info.`device_id`=ratepre.`device_id` WHERE oldperson.old_id=? GROUP BY oldperson.old_id  ORDER BY ratepre.create_time DESC";
+            ratepreDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(RatepreDto.class),oldId);
+        }else{
+            sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,rate_state,pre_state,ratepre.`create_time` FROM oldperson INNER JOIN watch_info ON oldperson.device_id=watch_info.device_id INNER JOIN ratepre ON watch_info.`device_id`=ratepre.`device_id` WHERE create_time BETWEEN ? AND ? and oldperson.old_id=? GROUP BY oldperson.old_id  ORDER BY ratepre.create_time DESC";
+            ratepreDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(RatepreDto.class),timeFirst,timeLast,oldId);
+        }
+        return ratepreDtos;
+    }
+
+    @Override
+    public List<RatepreDto> getRatepreDetial(int oldId) {
+        String sql="SELECT hr,bp,ratepre.`create_time` FROM oldperson INNER JOIN watch_info ON oldperson.device_id=watch_info.device_id INNER JOIN ratepre ON watch_info.`device_id`=ratepre.`device_id` WHERE oldperson.old_id=? ORDER BY ratepre.create_time ASC LIMIT 30";
+        List<RatepreDto> ratepreDtos=null;
+        ratepreDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(RatepreDto.class),oldId);
         return ratepreDtos;
     }
 
