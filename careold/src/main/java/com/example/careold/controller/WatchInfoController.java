@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/watchInfo")
+@RequestMapping("/restful/watchInfo")
 public class WatchInfoController {
 
     @Autowired
@@ -41,22 +41,26 @@ public class WatchInfoController {
     public ListOrderedMap add(@RequestBody ListOrderedMap param){
         ListOrderedMap result=new ListOrderedMap();
         String deviceId=param.get("deviceId").toString();
-        String bpf=param.get("bpf").toString();
-        String bpl=param.get("bpl").toString();
-        String hrf=param.get("hrf").toString();
-        String hrl=param.get("hrl").toString();
-        WatchInfo watchInfo=new WatchInfo();
-        watchInfo.setDeviceId(Integer.parseInt(deviceId));
-        watchInfo.setOpTime(DateConst.dateToString(new Date(),DateConst.DATE_MODEL_1));
-        watchInfo.setBpf(Integer.parseInt(bpf));
-        watchInfo.setBpl(Integer.parseInt(bpl));
-        watchInfo.setHrf(Integer.parseInt(hrf));
-        watchInfo.setHrl(Integer.parseInt(hrl));
-        int rows=watchInfoDao.addWatchInfo(watchInfo);
-        if(rows==1){
-            result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
-            return result;
+        List<WatchDto> watchInfo2 = watchInfoDao.getWatchInfo2(Integer.parseInt(deviceId));
+        if(watchInfo2.size()==0){
+            String bpf=param.get("bpf").toString();
+            String bpl=param.get("bpl").toString();
+            String hrf=param.get("hrf").toString();
+            String hrl=param.get("hrl").toString();
+            WatchInfo watchInfo=new WatchInfo();
+            watchInfo.setDeviceId(Integer.parseInt(deviceId));
+            watchInfo.setOpTime(DateConst.dateToString(new Date(),DateConst.DATE_MODEL_1));
+            watchInfo.setBpf(Integer.parseInt(bpf));
+            watchInfo.setBpl(Integer.parseInt(bpl));
+            watchInfo.setHrf(Integer.parseInt(hrf));
+            watchInfo.setHrl(Integer.parseInt(hrl));
+            int rows=watchInfoDao.addWatchInfo(watchInfo);
+            if(rows==1){
+                result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
+                return result;
+            }
         }
+
         result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.falseCode);
         return result;
     }

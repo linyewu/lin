@@ -4,11 +4,9 @@ import com.example.careold.common.ReturnCodeUtil;
 import com.example.careold.dao.FamilyDao;
 import com.example.careold.dao.OldPersonDao;
 import com.example.careold.dao.UserDao;
-import com.example.careold.domain.Family;
-import com.example.careold.domain.FamilyDto;
-import com.example.careold.domain.OldDto2;
-import com.example.careold.domain.Users;
+import com.example.careold.domain.*;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
-@RequestMapping("/family")
+@RequestMapping("/restful/family")
 public class FamilyController {
 
     @Autowired
@@ -37,6 +35,7 @@ public class FamilyController {
         result.put("familyDtos",familyDtos);
         return result;
     }
+
 
     @ResponseBody
     @PostMapping("/add")
@@ -101,6 +100,72 @@ public class FamilyController {
         String familyId=params.get("familyId").toString();
         int row=familyDao.delete(familyId);
         if(row==1){
+            result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
+            return result;
+        }
+        result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.falseCode);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/selectTwo")
+    public ListOrderedMap selectTwo(@RequestBody ListOrderedMap params){
+        ListOrderedMap result=new ListOrderedMap();
+        String familyPhone=params.get("familyPhone").toString();
+        FamilyDto2 familyDto2 =familyDao.getFamilyByPhoneForFamily(familyPhone);
+
+        result.put("familyDto2",familyDto2);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/updateTwo")
+    public ListOrderedMap updateTwo(@RequestBody ListOrderedMap params){
+        ListOrderedMap result=new ListOrderedMap();
+        String familyPhone=params.get("familyPhone").toString();
+        String familyName=params.get("familyName").toString();
+        String familySex=params.get("familySex").toString();
+        String familyId=params.get("familyId").toString();
+        String familyAddress=params.get("familyAddress").toString();
+        FamilyDto2 familyDto2=new FamilyDto2();
+        familyDto2.setFamilyAddress(familyAddress);
+        familyDto2.setFamilyName(familyName);
+        familyDto2.setFamilySex(familySex);
+        familyDto2.setFamilyPhone(familyPhone);
+        familyDto2.setFamilyId(Integer.parseInt(familyId));
+        int rows=familyDao.updateFamilyByPhoneForFamily(familyDto2);
+
+        if(rows==1){
+            result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
+            return result;
+        }
+        result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.falseCode);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/updateTouPic")
+    public ListOrderedMap updateTouPic(@RequestBody ListOrderedMap params){
+        ListOrderedMap result=new ListOrderedMap();
+        String familyPhone=params.get("familyPhone").toString();
+        String familyTouPic=params.get("familyTouPic").toString();
+        int rows=familyDao.updateFamilyTouPic(familyTouPic,familyPhone);
+        if(rows==1){
+            result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
+            return result;
+        }
+        result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.falseCode);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/updatePassword")
+    public ListOrderedMap updatePassword(@RequestBody ListOrderedMap params){
+        ListOrderedMap result=new ListOrderedMap();
+        String familyPhone=params.get("familyPhone").toString();
+        String familyPassword=params.get("familyPassword").toString();
+        int rows=familyDao.updateFamilyPasswordByPhoneForFamily(familyPassword,familyPhone);
+        if(rows==1){
             result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
             return result;
         }

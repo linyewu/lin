@@ -10,7 +10,7 @@ import com.github.qcloudsms.httpclient.HTTPException;
 
 public class SmsUtil {
 		// TODO Auto-generated method stub
-		public void sendMassage(String phone){
+		public static void sendMassage(String phone){
 				// 短信应用SDK AppID
 		        int appid = 1400193017; // 1400开头
 

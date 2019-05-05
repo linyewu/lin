@@ -154,7 +154,7 @@ export default {
       console.log('权限查询事件')
       var _this = this
       var permName = _this.searchText
-      axios.post('/permissions/select',
+      axios.post('restful/permissions/select',
         {
           'permName': permName === '' ? '' : _this.searchText
         },
@@ -177,7 +177,7 @@ export default {
       var _this = this
       var param = _this.rightForm
       console.log(param)
-      axios.post('/permissions/save', param,
+      axios.post('restful/permissions/save', param,
         {
           headers: {
             'content-type': 'application/json'
@@ -213,7 +213,7 @@ export default {
       var _this = this
       var para = _this.editRightForm
       console.log(para)
-      axios.post('/permissions/update', para,
+      axios.post('restful/permissions/update', para,
         {
           headers: {
             'content-type': 'application/json'
@@ -254,7 +254,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         })
-        axios.post('/permissions/delete', {
+        axios.post('restful/permissions/delete', {
           'permId': permId
         },
         {

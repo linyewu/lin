@@ -17,6 +17,10 @@
           </el-input>
         </el-col>
         
+				<el-badge :value="this.num" class="item">
+				  <el-button size="small">摔倒</el-button>
+				</el-badge>
+				
       </el-row>
     </div>
     <!-- start 添加角色弹窗 -->
@@ -184,7 +188,8 @@ export default {
       // 当前被分配权限的角色id
       roleId: -1,
 			lng: '121.14598',
-			lat: '31.160186'
+			lat: '31.160186',
+			num:''
     }
   },
   created () {
@@ -210,7 +215,7 @@ export default {
       var _this = this
       var name = _this.searchText
 
-      axios.post('position/select',
+      axios.post('restful/position/select',
         {
           'name': name === '' ? '' : _this.searchText
         },
@@ -222,7 +227,17 @@ export default {
         }).then(function (response) {
         console.log(response)
         _this.positionList = response.data.positionDtos
-        _this.total = response.data.roles.length
+				var count=0;
+				var len=response.data.positionDtos.length
+				for(var i=0;i<len;i++){
+					if(_this.positionList[i].status=='1'){
+						console.log('摔倒')
+						count++;
+					}
+				}
+				console.log(count)
+				_this.num=count
+        _this.total = response.data.positionDtos.length
       })
         .catch(function (error) {
           console.log(error)
@@ -231,7 +246,7 @@ export default {
     // 添加角色
     addRoles () {
       var _this = this
-      axios.post('roles/save',
+      axios.post('restful/roles/save',
         {
           'roleName': _this.roleForm.roleName
         },
@@ -268,7 +283,7 @@ export default {
     // 编辑
     editRole () {
       var _this = this
-      axios.post('roles/update', _this.roleEditForm,
+      axios.post('restful/roles/update', _this.roleEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -303,7 +318,6 @@ export default {
 	map.enableScrollWheelZoom(true); 
 	},
 	theLocation(){
-		console.log('iop')
 		var map = new BMap.Map("allmap");
 		map.centerAndZoom(new BMap.Point(121.14598,31.160186),45);
 		map.enableScrollWheelZoom(true);
@@ -317,7 +331,6 @@ export default {
 	},
     // 删除
     async deleteRole (roleName) {
-      console.log(roleName)
 
       var _this = this
       try {
@@ -327,14 +340,13 @@ export default {
           type: 'warning'
         })
         console.log(roleName)
-        axios.post('roles/delete', {'roleName': roleName},
+        axios.post('restful/roles/delete', {'roleName': roleName},
           {
             headers: {
               'content-type': 'application/json'
             },
             withCredentials: true
           }).then(function (response) {
-          console.log(response)
           if (response.data.returnCode === '1111') {
             _this.$message({
               type: 'success',

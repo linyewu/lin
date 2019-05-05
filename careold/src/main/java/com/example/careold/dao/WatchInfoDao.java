@@ -9,6 +9,8 @@ public interface WatchInfoDao {
 
     List<WatchDto> getWatchInfo(String oldName);
 
+    List<WatchDto> getWatchInfo2(int deviceId);
+
     int addWatchInfo(WatchInfo watchInfo);
 
     int updateWatchInfo(WatchInfo watchInfo);

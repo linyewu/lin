@@ -53,34 +53,25 @@
       title="评论回复"
       :visible.sync="watchEditDialogVisible"
       width="30%">
-      <el-form label-width="80px" :model="watchEditForm">
-        <!-- <el-form-item label="老人姓名" prop="name">
-        <el-input v-model="watchEditForm.name"></el-input>
-        </el-form-item> -->
+      <el-form label-width="80px" :model="saidEditForm">
         <el-form-item label="" prop="saidId" style="display: none; ">
-        <el-input v-model="watchEditForm.saidId"></el-input>
+        <el-input v-model="saidEditForm.saidId"></el-input>
         </el-form-item>
         <el-form-item label="评论" prop="said" >
-        <el-input v-model="watchEditForm.said" disabled="disabled"></el-input>
+        <el-input v-model="saidEditForm.said" disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item label="回复" prop="back">
-        <el-input v-model="watchEditForm.back"></el-input>
+        <el-input v-model="saidEditForm.back"></el-input>
         </el-form-item>
-        <!-- <el-form-item label="心率高值" prop="hrf">
-        <el-input v-model="watchEditForm.hrf"></el-input>
-        </el-form-item>
-        <el-form-item label="心率低值" prop="hrl">
-        <el-input v-model="watchEditForm.hrl"></el-input>
-        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
       <el-button @click="watchEditDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="editWatch">确 定</el-button>
+      <el-button type="primary" @click="editSaid">确 定</el-button>
     </span>
     </el-dialog>
     <!-- end 编辑角色弹窗 -->
     <!-- 表格 -->
-    <el-table :data="watchsList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+    <el-table :data="saidList.slice((currentPage-1)*pageSize,currentPage*pageSize)"
     style="width: 100%" >
     <!-- 可展开行 -->
       
@@ -92,18 +83,18 @@
       <el-table-column prop="personName" label="作者" width="100" align="center"></el-table-column>
 	  <!-- <el-table-column prop="saidId" style="display: none;" label="作者" width="160" align="center"></el-table-column> -->
       <el-table-column prop="said" label="评论" width="160" align="center"></el-table-column>
-			<el-table-column prop="saidTime" label="评论时间" width="160" align="center"></el-table-column>
+			<el-table-column prop="saidTime" label="评论时间" width="180" align="center"></el-table-column>
 			<el-table-column prop="back" label="回复" width="160" align="center"></el-table-column>
-			<el-table-column prop="backTime" label="回复时间" width="160" align="center"></el-table-column>
+			<el-table-column prop="backTime" label="回复时间" width="180" align="center"></el-table-column>
 			<el-table-column prop="title" label="文章标题" width="160" align="center"></el-table-column>
 	  <!-- <el-table-column prop="fee" label="话费余额" width="140" align="center"></el-table-column>
 	  <el-table-column prop="power" label="电量" width="140" align="center"></el-table-column> -->
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit"
-                     @click="handleEditwatch(scope.$index, scope.row)">回复
+          <el-button v-if="scope.row.back==null" size="mini" plain type="primary" icon="el-icon-edit"
+                     @click="handleeditSaid(scope.$index, scope.row)">回复
           </el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="deleteRole(scope.row.deviceId)">删除
+          <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="deleteSaid(scope.row.saidId)">删除
           </el-button>
           
         </template>
@@ -169,7 +160,7 @@ export default {
 				hrf: '',
 				hrl: ''
       },
-      watchEditForm: {
+      saidEditForm: {
         saidId: '',
         said: '',
         back: ''
@@ -178,7 +169,7 @@ export default {
       total: 0,
       pageSize: 10,
       currentPage: 1,
-      watchsList: [{
+      saidList: [{
 		  saidId:'1',
 		  touPic:require('../assets/img/QQ图片20170101150550.jpg'),
 		  personName:'1',
@@ -205,17 +196,16 @@ export default {
     }
   },
   created () {
-    // this.searchWatchs()
+    this.searchSaid()
   },
   methods: {
     // 查询
-    searchWatchs () {
+    searchSaid () {
       var _this = this
-        var oldName = _this.searchText
         
-        axios.post('watchInfo/select',
+        axios.post('restful/said/selectByUser',
           {
-            'oldName': oldName === '' ? '' : _this.searchText
+            // 'oldName': oldName === '' ? '' : _this.searchText
           },
           {
             headers: {
@@ -223,9 +213,14 @@ export default {
             },
             withCredentials: true
           }).then(function (response) {
-          _this.watchsList = response.data.watchDtos
-          _this.total = response.data.watchDtos.length
-      console.log(_this.watchsList)
+          var tableData2 = response.data.saidDtos
+          _this.total = response.data.saidDtos.length
+					for(var i=0;i<tableData2.length;i++){
+						console.log(tableData2[i].touPic)
+						tableData2[i].touPic = 'http://47.106.37.197:9110/'+tableData2[i].touPic
+					}
+					_this.saidList=tableData2
+      console.log(_this.saidList)
         })
           .catch(function (error) {
             console.log(error)
@@ -235,7 +230,7 @@ export default {
     // 添加角色
     addWatchs () {
       var _this = this
-      axios.post('watchInfo/add',
+      axios.post('restful/watchInfo/add',
         _this.watchForm,
         {
           headers: {
@@ -246,7 +241,7 @@ export default {
         console.log(response)
         if (response.data.returnCode === '1111') {
           _this.watchDialogVisible = false
-          _this.searchWatchs()
+          _this.searchSaid()
           _this.$message({
             type: 'success',
             message: '添加手表成功'
@@ -268,9 +263,9 @@ export default {
       this.$refs.addwatchFormRef.resetFields()
     },
     // 编辑
-    editWatch () {
+    editSaid () {
       var _this = this
-      axios.post('watchInfo/update', _this.watchEditForm,
+      axios.post('restful/said/update',_this.saidEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -282,13 +277,13 @@ export default {
           _this.watchEditDialogVisible = false
           _this.$message({
             type: 'success',
-            message: '编辑手表信息成功'
+            message: '回复评论成功'
           })
-          _this.searchWatchs()
+          _this.searchSaid()
         } else {
           _this.$message({
             type: 'error',
-            message: '编辑手表信息失败'
+            message: '回复评论失败'
           })
         }
       })
@@ -297,8 +292,7 @@ export default {
         })
     },
     // 删除
-    async deleteRole (deviceId) {
-      console.log(deviceId)
+    async deleteSaid (saidId) {
 
       var _this = this
       try {
@@ -307,8 +301,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         })
-        console.log(deviceId)
-        axios.post('watchInfo/delete', {'deviceId': deviceId},
+        axios.post('restful/said/delete', {'saidId': saidId},
           {
             headers: {
               'content-type': 'application/json'
@@ -322,7 +315,7 @@ export default {
               message: '删除信息成功'
             })
           }
-          _this.searchWatchs()
+          _this.searchSaid()
         })
           .catch(function (error) {
             console.log(error)
@@ -336,9 +329,9 @@ export default {
       }
     },
     // 编辑信息
-    handleEditwatch (index, row) {
+    handleeditSaid (index, row) {
       this.watchEditDialogVisible = true
-      this.watchEditForm = Object.assign({}, row) // 解决修改弹出框数据时，表格数据会发生同步改变
+      this.saidEditForm = Object.assign({}, row) // 解决修改弹出框数据时，表格数据会发生同步改变
       // console.log(row)
     },
     handleSizeChange (val) {

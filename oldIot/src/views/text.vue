@@ -12,7 +12,7 @@
 		<div style="margin-left: 35px;">
 			<el-upload
 			class="upload-demo"
-			action="image/saveImage"
+			action="restful/image/saveImage"
 			:on-preview="handlePreview"
 			:on-remove="handleRemove"
 			:on-success="handleAvatarSuccess"
@@ -101,7 +101,7 @@
 	  			'fileListName': _this.fileListName
 	  		}
 	  		console.log(params)
-	  		axios.post('text/update',params,
+	  		axios.post('restful/text/update',params,
 	  		{
 	  			headers: {
 	  				'content-type': 'application/json'
@@ -124,7 +124,7 @@
 		  	'textId': _this.textId
 		  }
 		  console.log(params)
-		  axios.post('text/selectDetail',params,
+		  axios.post('restful/text/selectDetail',params,
 		  {
 		  	headers: {
 		  		'content-type': 'application/json'

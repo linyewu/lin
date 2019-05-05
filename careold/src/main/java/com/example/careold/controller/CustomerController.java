@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
-@RequestMapping("/customer")
+@RequestMapping("/restful/customer")
 public class CustomerController {
 
     @Autowired

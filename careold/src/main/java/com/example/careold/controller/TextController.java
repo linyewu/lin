@@ -3,11 +3,15 @@ package com.example.careold.controller;
 import com.example.careold.common.DateConst;
 import com.example.careold.common.DefineData;
 import com.example.careold.common.ReturnCodeUtil;
+import com.example.careold.common.SmsUtil;
+import com.example.careold.dao.FamilyDao;
 import com.example.careold.dao.PicDao;
 import com.example.careold.dao.TextDao;
+import com.example.careold.domain.FamilyDto;
 import com.example.careold.domain.Pic;
 import com.example.careold.domain.Text;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/text")
+@RequestMapping("/restful/text")
 public class TextController {
 
     @Autowired
@@ -27,6 +31,9 @@ public class TextController {
 
     @Autowired
     PicDao picDao;
+
+    @Autowired
+    FamilyDao familyDao;
 
     @ResponseBody
     @PostMapping("/select")
@@ -73,6 +80,10 @@ public class TextController {
         text.setPicId(picId);
         int rows=textDao.addText(text);
         if(rows==1){
+            List<FamilyDto> familyDtos=familyDao.findFamily(null);
+            for(int i=0;i<familyDtos.size();i++){
+//                SmsUtil.sendMassage(familyDtos.get(i).getFamilyPhone());
+            }
             List<Text> texts = textDao.selectTextAll(null);
             result.put("texts",texts);
             result.put(ReturnCodeUtil.returnCode,ReturnCodeUtil.successCode);
@@ -84,6 +95,7 @@ public class TextController {
 
     @ResponseBody
     @PostMapping("/delete")
+    @RequiresPermissions(value = {"上传"})
     public ListOrderedMap deleteText(@RequestBody ListOrderedMap param){
         ListOrderedMap result=new ListOrderedMap();
         String textId=param.get("textId").toString();

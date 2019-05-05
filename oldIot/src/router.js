@@ -13,9 +13,10 @@ import annex from './views/annex.vue'
 import text from './views/text.vue'
 import textTwo from './views/textTwo.vue'
 import textMain from './views/textMain.vue'
+import textMainUser from './views/textMainUser.vue'
 import step from './views/step.vue'
 import stepfamily from './views/stepfamily.vue'
-import warning from './views/warning.vue'
+// import warning from './views/warning.vue'
 import position from './views/position.vue'
 import positionfamily from './views/positionfamily.vue'
 import life from './views/life.vue'
@@ -63,6 +64,11 @@ const router = new Router({
 					path: '/me',
 					name: '个人中心',
 					component: me
+				},
+				{
+					path: '/textMain',
+					name: '公告内容',
+					component: textMain
 				}]
 	},
     { path: '/home',
@@ -83,11 +89,6 @@ const router = new Router({
 					path: '/step',
 					name: '睡眠步数',
 					component: step
-				},
-				{
-					path: '/warning',
-					name: '摔倒报警',
-					component: warning
 				},
 				{
 					path: '/position',
@@ -125,9 +126,9 @@ const router = new Router({
 					component: textTwo
 				},
 				{
-					path: '/textMain',
+					path: '/textMainUser',
 					name: '公告内容',
-					component: textMain
+					component: textMainUser
 				},
 				{
 					path: '/textOpt',

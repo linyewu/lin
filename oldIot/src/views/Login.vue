@@ -16,7 +16,7 @@
         class="login-form"
       >
         <div style="height: 80px;text-align: left;">
-          <span style="font-size: 20px;">Login</span>
+          <span style="font-size: 30px;">智慧养老手表管理系统</span>
         </div>
         <el-form-item
           label="电话"
@@ -50,7 +50,28 @@
 
 import axios from 'axios'
 export default {
+	
   data () {
+		var checkPhone = (rule, value, callback) => {
+		  const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
+		  if (!value) {
+		    return callback(new Error('电话号码不能为空'))
+		  }
+		  setTimeout(() => {
+		    // Number.isInteger是es6验证数字是否为整数的方法,但是我实际用的时候输入的数字总是识别成字符串
+		    // 所以我就在前面加了一个+实现隐式转换
+		
+		    if (!Number.isInteger(+value)) {
+		      callback(new Error('请输入数字值'))
+		    } else {
+		      if (phoneReg.test(value)) {
+		        callback()
+		      } else {
+		        callback(new Error('电话号码格式不正确'))
+		      }
+		    }
+		  }, 100)
+		}
     return {
       // 表单数据
       loginForm: {
@@ -64,9 +85,9 @@ export default {
       // 表单验证规则
       rules: {
         phone: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 20, message: '用户名长度为3到20个字符', trigger: 'blur' }
-        ],
+				{ required: true, message: '请输入电话', trigger: 'blur' },
+			  { validator: checkPhone, trigger: 'blur'}
+			],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 6, max: 20, message: '密码长度为6-20个字符', trigger: 'blur' }
@@ -75,12 +96,15 @@ export default {
     }
   },
   methods: {
+	  resetForm(){
+		  this.loginForm.phone=''
+		  this.loginForm.password=''
+	  },
     submitForm (formName) {
       console.log(formName)
-	  var _this = this
-	    // var oldName = _this.searchText
+			var _this = this
 	    
-	    axios.post('userLogin/login',
+	    axios.post('restful/userLogin/login',
 	      _this.loginForm,
 	      {
 	        headers: {
@@ -104,6 +128,7 @@ export default {
 						console.log(_this.familyTouPic+'----'+_this.familyPhone+'===='+_this.oldId)
 						localStorage.setItem('oldIdfamily', _this.oldId)
 						localStorage.setItem('familyPhone', _this.familyPhone)
+						localStorage.setItem('familyTouPic', _this.familyTouPic)
 						localStorage.setItem('token', true)
 						_this.$router.push({ path: '/familyHome' })
 					}
@@ -115,23 +140,6 @@ export default {
 	        console.log(error)
 	      })
       
-	  
-      // this.$refs[formName].validate((valid) => {
-      //   if (valid) {
-      //      this.$router.push({ path: 'main' });
-      //      this.$http.get("login", {
-      //         username: this.loginForm.username,
-      //         password:this.loginForm.password
-      //     }).then((response) => {
-      //         this.$router.push('main'); // 此处因为ES6箭头函数上下文穿透，this的上下文为外层的this，即Vue实例
-      //     }).catch(function (response) {
-      //         console.error(response);
-      //     });
-      //   } else {
-      //     console.log('error submit!!');
-      //     return false;
-      //   }
-      // });
     }
   }
 }

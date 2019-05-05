@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/ratepre")
+@RequestMapping("/restful/ratepre")
 public class RatepreController {
 
     @Autowired
@@ -24,6 +24,7 @@ public class RatepreController {
 
     private static final Logger LOG = LoggerFactory.getLogger(RatepreController.class);
 
+    //心率血压查询
     @ResponseBody
     @PostMapping("/selectRatepre")
     public ListOrderedMap selectRatepre(@RequestBody ListOrderedMap param){

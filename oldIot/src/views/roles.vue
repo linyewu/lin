@@ -214,7 +214,7 @@ export default {
       var _this = this
       var roleName = _this.searchText
 
-      axios.post('roles/select',
+      axios.post('restful/roles/select',
         {
           'roleName': roleName === '' ? '' : _this.searchText
         },
@@ -235,7 +235,7 @@ export default {
     // 添加角色
     addRoles () {
       var _this = this
-      axios.post('roles/save',
+      axios.post('restful/roles/save',
         {
           'roleName': _this.roleForm.roleName
         },
@@ -272,7 +272,7 @@ export default {
     // 编辑
     editRole () {
       var _this = this
-      axios.post('roles/update', _this.roleEditForm,
+      axios.post('restful/roles/update', _this.roleEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -310,7 +310,7 @@ export default {
           type: 'warning'
         })
         console.log(roleName)
-        axios.post('roles/delete', {'roleName': roleName},
+        axios.post('restful/roles/delete', {'roleName': roleName},
           {
             headers: {
               'content-type': 'application/json'

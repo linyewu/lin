@@ -220,7 +220,7 @@ export default {
 // 				this.value6=['','']
 // 			}
 // 			console.log(this.value6[1])
-      axios.post('ratepre/selectRatepreFamily',
+      axios.post('restful/ratepre/selectRatepreFamily',
         {
 					"oldId":oldId
 				},
@@ -242,7 +242,7 @@ export default {
 		getCount(){
 			console.log('kaishe')
 			var _this=this
-			axios.post('/ratepre/selectRatepreCount',
+			axios.post('restful/ratepre/selectRatepreCount',
 				{
 					
 				},
@@ -264,7 +264,7 @@ export default {
     // 添加角色
     addRoles () {
       var _this = this
-      axios.post('roles/save',
+      axios.post('restful/roles/save',
         {
           'roleName': _this.roleForm.roleName
         },
@@ -311,7 +311,7 @@ export default {
           type: 'warning'
         })
         console.log(roleName)
-        axios.post('roles/delete', {'roleName': roleName},
+        axios.post('restful/roles/delete', {'roleName': roleName},
           {
             headers: {
               'content-type': 'application/json'
@@ -359,13 +359,10 @@ export default {
     // 展示分配权限对话框
     showRoleDialog (curOld) {
 			var _this=this
-      // curRole 表示当前角色的数据，children属性是当前角色拥有的权限
-//       console.log('showRoleDialog', curOld.name)
-// 			_this.name=curOld.name
 			var oldId=_this.oldId
       // 展示对话框
       _this.isShowRoleDialog = true
-			axios.post('ratepre/selectRatepreDetail',{
+			axios.post('restful/ratepre/selectRatepreDetail',{
           "oldId":oldId
         },
 				{

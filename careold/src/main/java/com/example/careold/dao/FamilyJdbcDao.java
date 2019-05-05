@@ -2,6 +2,7 @@ package com.example.careold.dao;
 
 import com.example.careold.domain.Family;
 import com.example.careold.domain.FamilyDto;
+import com.example.careold.domain.FamilyDto2;
 import com.example.careold.domain.OldDto2;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
@@ -56,7 +57,7 @@ public class FamilyJdbcDao extends JdbcCom implements FamilyDao {
 
     @Override
     public FamilyDto findFamilyByPhone(String phone) {
-        String sql="select old_id,name,oldperson.family_id,family_name,family_relation,family_phone,family_sex,family_address,family_tou_pic from oldperson INNER JOIN family on family.family_id=oldperson.family_id where family_phone = ?";
+        String sql="SELECT old_id,name,oldperson.family_id,family_name,family_relation,family_phone,family_sex,family_address,family_tou_pic from oldperson inner JOIN family on family.family_id=oldperson.family_id where family_phone=?";
         FamilyDto familyDto=jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(FamilyDto.class),phone);
         return familyDto;
     }
@@ -66,6 +67,34 @@ public class FamilyJdbcDao extends JdbcCom implements FamilyDao {
         String sql="select  family_id from family where family_phone = ?";
         String familyId=jdbcTemplate.queryForObject(sql,String.class,phone);
         return familyId;
+    }
+
+    @Override
+    public FamilyDto2 getFamilyByPhoneForFamily(String phone) {
+        String sql="select family_id,family_name,family_sex,family_address,family_password,family_tou_pic from family where family_phone=?";
+        FamilyDto2 familyDto2=jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(FamilyDto2.class),phone);
+        return familyDto2;
+    }
+
+    @Override
+    public int updateFamilyByPhoneForFamily(FamilyDto2 familyDto2) {
+        String sql="update family set family_name=?,family_sex=?,family_address=?,family_phone=? where family_id=?";
+        int rows=jdbcTemplate.update(sql,familyDto2.getFamilyName(),familyDto2.getFamilySex(),familyDto2.getFamilyAddress(),familyDto2.getFamilyPhone(),familyDto2.getFamilyId());
+        return rows;
+    }
+
+    @Override
+    public int updateFamilyPasswordByPhoneForFamily(String password,String phone) {
+        String sql="update family set family_password=? where family_phone=?";
+        int rows=jdbcTemplate.update(sql,password,phone);
+        return rows;
+    }
+
+    @Override
+    public int updateFamilyTouPic(String pic,String phone) {
+        String sql="update family set family_tou_pic=?  where family_phone=?";
+         int rows=jdbcTemplate.update(sql,pic,phone);
+        return rows;
     }
 
     @Override

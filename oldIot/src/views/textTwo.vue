@@ -12,7 +12,7 @@
 		<div style="margin-left: 35px;">
 			<el-upload
 			class="upload-demo"
-			action="image/saveImage"
+			action="restful/image/saveImage"
 			:on-preview="handlePreview"
 			:on-remove="handleRemove"
 			:on-success="handleAvatarSuccess"
@@ -84,7 +84,7 @@
 				  'fileListName': _this.fileListName
 			  }
 			  console.log(params)
-			  axios.post('text/add',params,
+			  axios.post('restful/text/add',params,
 			  	{
 			  		headers: {
 			  			'content-type': 'application/json'
@@ -98,8 +98,7 @@
 			  		console.log(error)
 			  	})
 			  _this.fileListName=[]
-			  console.log(_this.fileListName)
-        console.log('submit!');
+			  
       },
 	  handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);

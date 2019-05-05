@@ -20,7 +20,7 @@ public class StepJdbcDao implements StepDao {
         String sql;
         List<StepDto> stepDtos=null;
         if((name==null || "".equals(name)) && (timeFirst==null || "".equals(timeFirst)) && (timeFirst==null || "".equals(timeFirst))){
-            sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id  GROUP BY oldperson.old_id  ORDER BY watch_day_info.create_time DESC";
+            sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id where sleep>0  GROUP BY oldperson.old_id  ORDER BY watch_day_info.create_time DESC";
             stepDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(StepDto.class));
         }else if(name==null || "".equals(name)){
             sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id WHERE create_time BETWEEN ? AND ?  GROUP BY oldperson.old_id  ORDER BY watch_day_info.create_time DESC";
@@ -52,7 +52,7 @@ public class StepJdbcDao implements StepDao {
 
     @Override
     public List<StepDto> getStepSleepDetail(int oldId) {
-        String sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id WHERE oldperson.old_id=? ORDER BY watch_day_info.create_time ASC LIMIT 30";
+        String sql="SELECT oldperson.`name`,oldperson.old_id,oldperson.`sex`,step,sleep,sleep_sate,create_time FROM oldperson left JOIN watch_info ON oldperson.device_id=watch_info.device_id left JOIN watch_day_info ON watch_info.`device_id`=watch_day_info.device_id WHERE oldperson.old_id=? ORDER BY watch_day_info.create_time ASC LIMIT 5";
         List<StepDto> stepDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(StepDto.class),oldId);
         return stepDtos;
     }

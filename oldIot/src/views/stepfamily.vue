@@ -1,36 +1,6 @@
 <template>
   <div class="roles">
-    <!-- 查询和添加 -->
-    <!-- <div class="sys-research">
-      <el-row class="row-search">
-        <el-col :span="8">
-          <el-input
-            placeholder="请输入搜索内容"
-            v-model="searchText"
-            class="input-with-select">
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="searchStep"></el-button>
-          </el-input>
-        </el-col>
-        <el-col :span="8">
-        <div class="block">
-        <el-date-picker
-        v-model="value6"
-				value-format="yyyy-MM-dd"
-        type="daterange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期">
-        </el-date-picker>
-        </div>
-        </el-col>
-		<el-badge :value="12" class="item">
-		  <el-button size="small">不合格</el-button>
-		</el-badge>
-      </el-row>
-    </div> -->
+    
     <!-- start 添加角色弹窗 -->
     <el-dialog
       title="角色添加"
@@ -201,7 +171,7 @@ export default {
       //       console.log('showRoleDialog', curOld.name)
       // 			_this.name=curOld.name
       			var oldId=_this.oldId
-      axios.post('step/selectStepFamily',
+      axios.post('restful/step/selectStepFamily',
         {
           "oldId":oldId
         },
@@ -223,7 +193,7 @@ export default {
     // 添加角色
     addRoles () {
       var _this = this
-      axios.post('roles/save',
+      axios.post('restful/roles/save',
         {
           'roleName': _this.roleForm.roleName
         },
@@ -259,71 +229,11 @@ export default {
     },
     // 编辑
     editRole () {
-//       var _this = this
-//       axios.post('roles/update', _this.roleEditForm,
-//         {
-//           headers: {
-//             'content-type': 'application/json'
-//           },
-//           withCredentials: true
-//         }).then(function (response) {
-//         console.log(response)
-//         if (response.data.returnCode === '1111') {
-//           _this.roleEditDialogVisible = false
-//           _this.$message({
-//             type: 'success',
-//             message: '编辑角色信息成功'
-//           })
-//           _this.searchStep()
-//         } else {
-//           _this.$message({
-//             type: 'error',
-//             message: '编辑角色信息失败'
-//           })
-//         }
-//       })
-//         .catch(function (error) {
-//           console.log(error)
-//         })
+
     },
     // 删除
     async deleteRole (roleName) {
-//       console.log(roleName)
-// 
-//       var _this = this
-//       try {
-//         await _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-//           confirmButtonText: '确定',
-//           cancelButtonText: '取消',
-//           type: 'warning'
-//         })
-//         console.log(roleName)
-//         axios.post('roles/delete', {'roleName': roleName},
-//           {
-//             headers: {
-//               'content-type': 'application/json'
-//             },
-//             withCredentials: true
-//           }).then(function (response) {
-//           console.log(response)
-//           if (response.data.returnCode === '1111') {
-//             _this.$message({
-//               type: 'success',
-//               message: '删除信息成功'
-//             })
-//           }
-//           _this.searchStep()
-//         })
-//           .catch(function (error) {
-//             console.log(error)
-//           })
-//       } catch (err) {
-//         // 取消删除
-//         this.$message({
-//           type: 'info',
-//           message: '已取消删除'
-//         })
-//       }
+
     },
     // 编辑信息
     handleEditRole (index, row) {
@@ -349,7 +259,7 @@ export default {
       var oldId=_this.oldId
       // 展示对话框
       _this.isShowRoleDialog = true
-      			axios.post('step/selectStepDetail',{
+      			axios.post('restful/step/selectStepDetail',{
 								"oldId":oldId
 							},
       				{
@@ -383,24 +293,30 @@ export default {
 		var _this=this
 		this.$nextTick(()=>{
 			let myChart = _this.$echarts.init(document.getElementById('myChart'));
-					// let myChart =this.$echarts.init(this.$refs.myChart)
-			//         let dom = this.$refs.mychart;
-			// 		this.myChart = echarts.init(dom);
 			
 					// 绘制图表
-			        myChart.setOption({
-			            title: { text: _this.name+"  睡眠时间  "+_this.time+"时" },
-			            tooltip: {},
-			            xAxis: {
-			                data: _this.createTime
-			            },
-			            yAxis: {},
-			            series: [{
-			                name: '销量',
-			                type: 'line',
-			                data: _this.sleep
-			            }]
-			        });
+					myChart.setOption({
+					    title: { text: _this.name+"  睡眠时间  "+_this.time },
+					    tooltip: {},
+					    xAxis: {
+					        data: _this.createTime
+					    },
+					    yAxis: [{
+										type: 'value',
+												show: true,    //显示纵轴false-不显示，true-显示
+												name:'小时'   //这里是纵轴标题
+									}],
+					    series: [{
+					        name: '销量',
+					        type: 'bar',
+					        data: _this.sleep,
+											itemStyle:{
+											           normal:{
+											                  color:'#99CCFF'
+											              }
+											          },
+					    }]
+					});
 		});
         
     }

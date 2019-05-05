@@ -23,11 +23,11 @@
     </div>
     <!-- start 添加角色弹窗 -->
     <el-dialog
-      title="角色添加"
+      title="监护人添加"
       :visible.sync="customerDialogVisible"
       @close="closeRoleAddDialog"
       width="30%">
-      <el-form label-width="80px" :model="customerForm"  ref="addcustomerFormRef">
+      <el-form label-width="80px" :model="customerForm" :rules="rules"  ref="addcustomerFormRef">
         <el-form-item label="姓名" prop="customerName">
           <el-input v-model="customerForm.customerName"></el-input>
         </el-form-item>
@@ -56,10 +56,10 @@
     <!-- end 添加角色弹窗 -->
     <!-- start 编辑角色弹窗 -->
     <el-dialog
-      title="角色编辑"
+      title="监护人编辑"
       :visible.sync="oldEditDialogVisible"
       width="30%">
-      <el-form label-width="80px" :model="oldEditForm">
+      <el-form label-width="80px" :rules="rules" :model="oldEditForm">
         <el-form-item label="姓名" prop="customerName">
         <el-input v-model="oldEditForm.customerName"></el-input>
         </el-form-item>
@@ -159,6 +159,44 @@ import axios from 'axios'
 
 export default {
   data () {
+		var checkPhone = (rule, value, callback) => {
+		  const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
+		  if (!value) {
+		    return callback(new Error('电话号码不能为空'))
+		  }
+		  setTimeout(() => {
+		    // Number.isInteger是es6验证数字是否为整数的方法,但是我实际用的时候输入的数字总是识别成字符串
+		    // 所以我就在前面加了一个+实现隐式转换
+		
+		    if (!Number.isInteger(+value)) {
+		      callback(new Error('请输入数字值'))
+		    } else {
+		      if (phoneReg.test(value)) {
+		        callback()
+		      } else {
+		        callback(new Error('电话号码格式不正确'))
+		      }
+		    }
+		  }, 100)
+		}
+       var checkAge = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('年龄不能为空'));
+        }
+        setTimeout(() => {
+          if (!Number.isInteger(+value)) {
+            callback(new Error('请输入数字值'));
+          } else {
+            if (+value < 0) {
+              callback(new Error('必须大于零'));
+            } else if(+value > 150){
+							callback(new Error('必须小于150'));
+						} else{
+              callback();
+            }
+          }
+        }, 1000);
+      }
     return {
       searchText: '', // 角色查询内容
       customerDialogVisible: false,
@@ -202,7 +240,15 @@ export default {
         label: 'authName'
       },
       // 当前被分配权限的角色id
-      roleId: -1
+      roleId: -1,
+			rules: {
+						customerPhone: [
+						  { validator: checkPhone, trigger: 'blur'}
+						],
+						customerAge: [
+            { validator: checkAge, trigger: 'blur' }
+          ]
+					  }
     }
   },
   created () {
@@ -211,10 +257,10 @@ export default {
   methods: {
     // 查询
     searchCustomers () {
-     var _this = this
-       var customerName = _this.searchText
+				var _this = this
+				var customerName = _this.searchText
        
-       axios.post('customer/select',
+       axios.post('restful/customer/select',
          {
            'customerName': customerName === '' ? '' : _this.searchText
          },
@@ -236,7 +282,7 @@ export default {
     // 添加角色
     addRoles () {
       var _this = this
-      axios.post('customer/add',
+      axios.post('restful/customer/add',
         _this.customerForm,
         {
           headers: {
@@ -271,7 +317,7 @@ export default {
     // 编辑
     editRole () {
       var _this = this
-      axios.post('customer/update', _this.oldEditForm,
+      axios.post('restful/customer/update', _this.oldEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -309,7 +355,7 @@ export default {
           type: 'warning'
         })
         console.log(customerId)
-        axios.post('customer/delete', {'customerId': customerId},
+        axios.post('restful/customer/delete', {'customerId': customerId},
           {
             headers: {
               'content-type': 'application/json'

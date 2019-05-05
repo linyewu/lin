@@ -23,7 +23,8 @@
         type="daterange"
         range-separator="至"
         start-placeholder="开始日期"
-        end-placeholder="结束日期">
+        end-placeholder="结束日期"
+		style="display: none;">
         </el-date-picker>
         </div>
         </el-col>
@@ -113,7 +114,7 @@
       
 	  
 	  <!--start echarts表格-->
-	  <div id="myChart" ref="mychart" :style="{width: '300px', height: '300px'}"></div>
+	  <div id="myChart" ref="mychart" style="margin-left: 280px;" :style="{width: '300px', height: '300px'}"></div>
 		<!--end echarts表格-->
       <div slot="footer" class="dialog-footer">
         <el-button @click="isShowRoleDialog = false">取 消</el-button>
@@ -197,19 +198,14 @@ export default {
   methods: {
     // 查询
     searchStep () {
-      console.log('查询老人')
-      console.log('search')
       
       var _this = this
       var name = _this.searchText
-      console.log(this.value6)
-      console.log('55555555555555')
       if(this.value6.length==0){
-				console.log('null')
       	this.value6=['','']
       }
       console.log('00'+this.value6[0])
-      axios.post('step/selectStep',
+      axios.post('restful/step/selectStep',
         {
           'name': name === '' ? '' : _this.searchText,
       		'timeFirst':_this.value6[0] =='' ? '' : _this.value6[0],
@@ -221,8 +217,6 @@ export default {
           },
           withCredentials: true
         }).then(function (response) {
-        console.log(response)
-      	console.log('====================================')
         _this.stepList = response.data.stepDtos
         _this.total = response.data.stepDtos.length
       })
@@ -233,7 +227,7 @@ export default {
 		getCount(){
 			console.log('kaishe')
 			var _this=this
-			axios.post('step/selectStepCount',
+			axios.post('restful/step/selectStepCount',
 				{
 					
 				},
@@ -252,7 +246,7 @@ export default {
     // 添加角色
     addRoles () {
       var _this = this
-      axios.post('roles/save',
+      axios.post('restful/roles/save',
         {
           'roleName': _this.roleForm.roleName
         },
@@ -288,71 +282,11 @@ export default {
     },
     // 编辑
     editRole () {
-//       var _this = this
-//       axios.post('roles/update', _this.roleEditForm,
-//         {
-//           headers: {
-//             'content-type': 'application/json'
-//           },
-//           withCredentials: true
-//         }).then(function (response) {
-//         console.log(response)
-//         if (response.data.returnCode === '1111') {
-//           _this.roleEditDialogVisible = false
-//           _this.$message({
-//             type: 'success',
-//             message: '编辑角色信息成功'
-//           })
-//           _this.searchStep()
-//         } else {
-//           _this.$message({
-//             type: 'error',
-//             message: '编辑角色信息失败'
-//           })
-//         }
-//       })
-//         .catch(function (error) {
-//           console.log(error)
-//         })
+
     },
     // 删除
     async deleteRole (roleName) {
-//       console.log(roleName)
-// 
-//       var _this = this
-//       try {
-//         await _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-//           confirmButtonText: '确定',
-//           cancelButtonText: '取消',
-//           type: 'warning'
-//         })
-//         console.log(roleName)
-//         axios.post('roles/delete', {'roleName': roleName},
-//           {
-//             headers: {
-//               'content-type': 'application/json'
-//             },
-//             withCredentials: true
-//           }).then(function (response) {
-//           console.log(response)
-//           if (response.data.returnCode === '1111') {
-//             _this.$message({
-//               type: 'success',
-//               message: '删除信息成功'
-//             })
-//           }
-//           _this.searchStep()
-//         })
-//           .catch(function (error) {
-//             console.log(error)
-//           })
-//       } catch (err) {
-//         // 取消删除
-//         this.$message({
-//           type: 'info',
-//           message: '已取消删除'
-//         })
-//       }
+
     },
     // 编辑信息
     handleEditRole (index, row) {
@@ -376,32 +310,30 @@ export default {
     showRoleDialog (curOld) {
       var _this=this
       console.log('0000000'+curOld.oldId)
-			var oldId=curOld.oldId
+	var oldId=curOld.oldId
 			_this.time=curOld.createTime
-			// _this.name=name
-			console.log(oldId)
       // 展示对话框
       _this.isShowRoleDialog = true
-      			axios.post('step/selectStepDetail',{
-								'oldId': oldId
-							},
-      				{
-      					headers: {
-      						'content-type': 'application/json'
-      					},
-      					withCredentials: true
-      				}).then(function (response) {
-      					
-      				console.log(response)
-      				console.log('this',_this)
-      				_this.sleep=response.data.sleep
-      				_this.createTime=response.data.createTime
-      				_this.drawLine()
-      				console.log('bps',_this.bps)
-      			})
-      				.catch(function (error) {
-      					console.log(error)
-      				})
+      	axios.post('restful/step/selectStepDetail',{
+      					'oldId': oldId
+      				},
+      		{
+      			headers: {
+      				'content-type': 'application/json'
+      			},
+      			withCredentials: true
+      		}).then(function (response) {
+      			
+      		console.log(response)
+      		console.log('this',_this)
+      		_this.sleep=response.data.sleep
+      		_this.createTime=response.data.createTime
+      		_this.drawLine()
+      		console.log('bps',_this.bps)
+      	})
+      		.catch(function (error) {
+      			console.log(error)
+      		})		
       
     },
 
@@ -437,9 +369,17 @@ export default {
 			                type: 'bar',
 			                data: _this.sleep,
 											itemStyle:{
-											           normal:{
-											                  color:'#99CCFF'
-											              }
+												color:function(params) {
+															 var index_color = params.value;
+																 if(index_color<7){
+																	return 'red';
+																 }else {
+																	return '#99CCFF';
+																 }
+															}
+// 											           normal:{
+// 											                  color:'#99CCFF'
+// 											              }
 											          },
 			            }]
 			        });

@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
 			'/': {
-					target: 'http://127.0.0.1:8795/',  // 接口域名
+					target: 'http://localhost:8795/',  // 接口域名
 					changeOrigin: true,  //是否跨域
 					pathRewrite: {}
 				}

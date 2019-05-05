@@ -23,7 +23,7 @@
 			  <el-header style="height: 400px;">
 				  <el-table
 			:data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
-			@row-click="getDetail"
+			@row-dblclick="getDetail"
 			style="width: 100%">
 			<el-table-column
 			label=" "
@@ -71,7 +71,7 @@
 		  <div style="margin-left: 35px;">
 		  	<el-upload
 		  	class="upload-demo"
-		  	action="image/saveImage"
+		  	action="restful/image/saveImage"
 		  	:on-preview="handlePreview"
 		  	:on-remove="handleRemove"
 		  	:on-success="handleAvatarSuccess"
@@ -85,6 +85,7 @@
 		  	<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 		  	</el-upload>
 		  </div>
+		  <el-button type="primary" style="float: right;margin-top: 10px;" @click="picShow">提交</el-button>
 	  </el-main>
 	</el-container>
   </div>
@@ -160,6 +161,27 @@ export default {
 					}
 				})
       },
+	  picShow(){
+		  var _this=this
+		  var params = {
+		   'fileListName': _this.fileListName
+		  }
+		  console.log(params)
+		  axios.post('restful/picshow/add',params,
+		  	{
+		  		headers: {
+		  			'content-type': 'application/json'
+		  		},
+		  		withCredentials: true
+		  	}).then(function (response) {
+		  	console.log(response)
+		  	_this.$router.push('/main')
+		  })
+		  	.catch(function (error) {
+		  		console.log(error)
+		  	})
+		  _this.fileListName=[]
+	  },
 	  handleSizeChange (val) {
 	    console.log(`每页 ${val} 条`)
 	    this.pageSize = val
@@ -203,7 +225,7 @@ export default {
 	  	var picId = row.picId
 	  	console.log('-------------------------------')
 	  	this.$router.push({
-	  	path: '/textMain',
+	  	path: '/textMainUser',
 	  	query: {
 	  		textId: textId,
 	  		picId: picId
@@ -219,7 +241,8 @@ export default {
 			'picId': row.picId
 		}
 		console.log(params)
-		axios.post('text/delete',params,
+		this.$router.push('/textOpt')
+		axios.post('restful/text/delete',params,
 		{
 			headers: {
 				'content-type': 'application/json'
@@ -228,13 +251,14 @@ export default {
 		}).then(function (response) {
 		console.log(response)
 		_this.tableData=response.data.texts
+		this.$router.push('/textOpt')
 		})
 		.catch(function (error) {
 			console.log(error)
 		})
       },
 			addtext(){
-				this.$router.push('/text')
+				this.$router.push('/textTwo')
 			},
 			searchOlds(){
 				var _this=this
@@ -243,7 +267,7 @@ export default {
 					'title': _this.searchText
 				}
 				console.log(params)
-				axios.post('text/select',params,
+				axios.post('restful/text/select',params,
 				{
 					headers: {
 						'content-type': 'application/json'

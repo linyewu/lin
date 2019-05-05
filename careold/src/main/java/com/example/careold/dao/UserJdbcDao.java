@@ -45,4 +45,12 @@ public class UserJdbcDao extends JdbcCom implements UserDao {
         Users users=jdbcTemplate.queryForObject(sql,new BeanPropertyRowMapper<>(Users.class),phone);
         return users;
     }
+
+    @Override
+    public List<Users> getUsersByPhone2(String phone) {
+
+        String sql="Select user_id,user_name,password,role,user_phone from users where user_phone = ?";
+        List<Users> users=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(Users.class),phone);
+        return users;
+    }
 }

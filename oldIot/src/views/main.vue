@@ -6,8 +6,8 @@
 				
 			  <el-header style="height: 400px;">
 			  	<el-carousel :interval="4000" type="card" height="350px">
-					<el-carousel-item v-for="item in 6" :key="item">
-					  <h3>{{ item }}</h3>
+					<el-carousel-item v-for="(img,index) in imgList" :key="index">
+					  <img v-bind:src="img.url">
 					</el-carousel-item>
 				  </el-carousel>
 			  </el-header>
@@ -20,7 +20,12 @@
 		  	<el-button size="small" @click="open">人员不合格</el-button>
 		  	</el-badge>
 		  </el-col>
-		  
+		  <el-col :span="2" class="logout-desc" >
+		  	 <el-badge :value="this.num" class="item">
+		  	  <el-button size="small">摔倒</el-button>
+		  	</el-badge>
+		  </el-col>
+		 
 		  </el-row>
 		  <hr />
 		  <el-row type="flex" >
@@ -123,11 +128,11 @@
   }
   
   .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
+    /* background-color: #99a9bf; */
   }
   
   .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
+    /* background-color: #d3dce6; */
   }
 </style>
 <script>
@@ -140,18 +145,48 @@ export default {
 		console.log('---')
 		this.searchOlds()
 		this.getCount()
+		this.seachPicShow()
+		this.searchposition()
+		
 		console.log('---')
 	// this.drawLine()
 	},
 	methods: {
+		searchposition () {
+		  var _this = this
+		
+		  axios.post('restful/position/select',
+		    {
+		      'name': ''
+		    },
+		    {
+		      headers: {
+		        'content-type': 'application/json'
+		      },
+		      withCredentials: true
+		    }).then(function (response) {
+		    console.log(response)
+				var count=0;
+				var len=response.data.positionDtos.length
+				_this.positionList=response.data.positionDtos
+				for(var i=0;i<len;i++){
+					if(_this.positionList[i].status=='1'){
+						console.log('摔倒')
+						count++;
+					}
+				}
+				_this.num=count
+		  })
+		    .catch(function (error) {
+		      console.log(error)
+		    })
+		},
       handleEdit(index, row) {
 				
         console.log(index, row);
 				 // this.$router.push({path: '/text'})
 				var nametwo = row.title
 				var textMain = row.textmain
-				console.log('-------------------------------')
-				console.log(nametwo+'----'+textMain)
 				this.$router.push({
 					path: '/text',
 					query: {
@@ -166,7 +201,7 @@ export default {
 	  getCount(){
 		  console.log('kaishe')
 		  var _this=this
-		  axios.post('step/getAllCount',
+		  axios.post('restful/step/getAllCount',
 		  	{
 		  		
 		  	},
@@ -200,7 +235,7 @@ export default {
 		  var picId = row.picId
 		  console.log('-------------------------------')
 		  this.$router.push({
-		  	path: '/textMain',
+		  	path: '/textMainUser',
 		  	query: {
 		  		textId: textId,
 		  		picId: picId
@@ -210,17 +245,41 @@ export default {
       handleDelete(index, row) {
         console.log(index, row);
       },
+	  seachPicShow(){
+		  var _this=this
+		  
+		  axios.post('restful/picshow/select',{},
+		  {
+		  	headers: {
+		  		'content-type': 'application/json'
+		  	},
+		  	withCredentials: true
+		  }).then(function (response) {
+			  console.log(response)
+		  _this.imgList = response.data.picShows
+		  console.log(_this.imgList)
+		  for(var i=0;i<_this.imgList.length;i++){
+		  	_this.imgList[i].url ='http://47.106.37.197:9110/' +_this.imgList[i].picName
+		  	console.log('图片地址')
+		  	console.log(_this.imgList[i].url)
+		  }
+		  
+		  })
+		  .catch(function (error) {
+		  	console.log(error)
+		  })
+	  },
+	  
 			addtext(){
 				this.$router.push('/text')
 			},
 			searchOlds(){
 				var _this=this
-				
 				var params = {
 					'title': _this.searchText
 				}
 				console.log(params)
-				axios.post('text/select',params,
+				axios.post('restful/text/select',params,
 				{
 					headers: {
 						'content-type': 'application/json'
@@ -229,6 +288,7 @@ export default {
 				}).then(function (response) {
 				console.log(response)
 				_this.tableData=response.data.texts
+				_this.total = response.data.texts.length
 				})
 				.catch(function (error) {
 					console.log(error)
@@ -252,7 +312,11 @@ export default {
 		total: 0,
 		pageSize: 10,
 		currentPage: 1,
-		allCount:''
+		allCount:'',
+		imgList:[],
+		num:'',
+		positionList:[],
+		urls:[]
     };
   }
 }

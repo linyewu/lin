@@ -39,7 +39,7 @@ public class SaidJdbcDao implements SaidDao {
 
     @Override
     public int addSaid(Said said) {
-        String sql="INSERT INTO said(said,text_id,said_time,personname,said_phone,tou_pic) VALUES(?,?,?,?,?,?)";
+        String sql="INSERT INTO said(said,text_id,said_time,person_name,said_phone,tou_pic) VALUES(?,?,?,?,?,?)";
         int rows=jdbcTemplate.update(sql,said.getSaid(),said.getTextId(),said.getSaidTime(),said.getPersonName(),said.getSaidPhone(),said.getTouPic());
         return rows;
     }
@@ -55,6 +55,18 @@ public class SaidJdbcDao implements SaidDao {
     public int updateSaid(Said said) {
         String sql="UPDATE said SET back=?,back_time=? WHERE said_id=?";
         int rows=jdbcTemplate.update(sql,said.getBack(),said.getBackTime(),said.getSaidId());
+        return rows;
+    }
+
+    @Override
+    public int updateSaid(String saidId,boolean flag) {
+        String sql=null;
+        if(flag){
+            sql="update said set nice_count=nice_count+1 where said_id=?";
+        }else{
+            sql="update said set nice_count=nice_count-1 where said_id=?";
+        }
+        int rows=jdbcTemplate.update(sql,saidId);
         return rows;
     }
 

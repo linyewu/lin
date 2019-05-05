@@ -48,10 +48,6 @@ export default {
 							childtitle: '睡眠步数'
 						},
 						{
-							index: '/warning',
-							childtitle: '摔倒报警'
-						},
-						{
 							index: '/position',
 							childtitle: '位置信息'
 						},

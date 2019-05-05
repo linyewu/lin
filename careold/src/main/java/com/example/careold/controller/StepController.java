@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/step")
+@RequestMapping("/restful/step")
 public class StepController {
 
     @Autowired

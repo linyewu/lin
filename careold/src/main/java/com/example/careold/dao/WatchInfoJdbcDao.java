@@ -31,6 +31,15 @@ public class WatchInfoJdbcDao implements WatchInfoDao {
     }
 
     @Override
+    public List<WatchDto> getWatchInfo2(int deviceId) {
+        String sql="";
+        List<WatchDto> watchDtos=null;
+        sql="select watch_info.device_id,op_time,hrf,bpf,hrl,bpl,name from watch_info left join oldperson on watch_info.device_id=oldperson.device_id  where watch_info.device_id=?";
+        watchDtos=jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(WatchDto.class),deviceId);
+        return watchDtos;
+    }
+
+    @Override
     public int addWatchInfo(WatchInfo watchInfo) {
         String sql="insert into watch_info(device_id,op_time,bpf,bpl,hrl,hrf) values(?,?,?,?,?,?)";
         int rows=jdbcTemplate.update(sql,watchInfo.getDeviceId(),watchInfo.getOpTime(),watchInfo.getBpf(),watchInfo.getBpl(),watchInfo.getHrl(),watchInfo.getHrf());

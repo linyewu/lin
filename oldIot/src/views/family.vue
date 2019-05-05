@@ -27,7 +27,7 @@
       :visible.sync="customerDialogVisible"
       @close="closeRoleAddDialog"
       width="30%">
-      <el-form label-width="80px" :model="familyForm"  ref="addfamilyFormRef">
+      <el-form label-width="80px" :model="familyForm" :rules="rules" class="demo-ruleForm"  ref="addfamilyFormRef">
         <el-form-item label="姓名" prop="familyName">
           <el-input v-model="familyForm.familyName"></el-input>
         </el-form-item>
@@ -61,7 +61,7 @@
       title="家属编辑"
       :visible.sync="oldEditDialogVisible"
       width="30%">
-      <el-form label-width="80px" :model="familyEditForm">
+      <el-form label-width="80px" :rules="rules" :model="familyEditForm">
         <el-form-item label="姓名" prop="familyName">
         <el-input v-model="familyEditForm.familyName"></el-input>
         </el-form-item>
@@ -163,6 +163,26 @@ import axios from 'axios'
 
 export default {
   data () {
+	  var checkPhone = (rule, value, callback) => {
+    const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
+    if (!value) {
+      return callback(new Error('电话号码不能为空'))
+    }
+    setTimeout(() => {
+      // Number.isInteger是es6验证数字是否为整数的方法,但是我实际用的时候输入的数字总是识别成字符串
+      // 所以我就在前面加了一个+实现隐式转换
+
+      if (!Number.isInteger(+value)) {
+        callback(new Error('请输入数字值'))
+      } else {
+        if (phoneReg.test(value)) {
+          callback()
+        } else {
+          callback(new Error('电话号码格式不正确'))
+        }
+      }
+    }, 100)
+  }
     return {
       searchText: '', // 角色查询内容
       customerDialogVisible: false,
@@ -181,7 +201,7 @@ export default {
         customerSex: '',
         customerPhone: '',
         customerAddress: '',
-				customerId: ''
+		customerId: ''
       },
       popoverRole: true,
       total: 0,
@@ -208,7 +228,15 @@ export default {
         label: 'authName'
       },
       // 当前被分配权限的角色id
-      roleId: -1
+      roleId: -1,
+	  rules: {
+			familyPhone: [
+			  { validator: checkPhone, trigger: 'blur'}
+			],
+			oldPhone: [
+			  { validator: checkPhone, trigger: 'blur'}
+			]
+		  }
     }
   },
   created () {
@@ -220,7 +248,7 @@ export default {
      var _this = this
        var familyName = _this.searchText
        
-       axios.post('family/select',
+       axios.post('restful/family/select',
          {
            'familyName': familyName === '' ? '' : _this.searchText
          },
@@ -242,7 +270,7 @@ export default {
     // 添加角色
     addFamily () {
       var _this = this
-      axios.post('family/add',
+      axios.post('restful/family/add',
         _this.familyForm,
         {
           headers: {
@@ -277,7 +305,7 @@ export default {
     // 编辑
     editFamily () {
       var _this = this
-      axios.post('family/updateFamily', _this.familyEditForm,
+      axios.post('restful/family/updateFamily', _this.familyEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -315,7 +343,7 @@ export default {
           type: 'warning'
         })
         console.log(familyId)
-        axios.post('family/deleteFamily', {'familyId': familyId},
+        axios.post('restful/family/deleteFamily', {'familyId': familyId},
           {
             headers: {
               'content-type': 'application/json'

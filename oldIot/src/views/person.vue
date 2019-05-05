@@ -27,10 +27,7 @@
       :visible.sync="oldDialogVisible"
       @close="closeRoleAddDialog"
       width="30%">
-	  
-	  
-	  
-      <el-form label-width="80px" :model="oldForm"  ref="addoldFormRef">
+      <el-form label-width="80px" :model="oldForm" :rules="rules"  ref="addoldFormRef">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="oldForm.name"></el-input>
         </el-form-item>
@@ -96,7 +93,7 @@
       title="角色编辑"
       :visible.sync="oldEditDialogVisible"
       width="30%">
-      <el-form label-width="80px" :model="oldEditForm">
+      <el-form label-width="80px" :rules="rules" :model="oldEditForm">
         		<el-form-item label="姓名" prop="name">
         			<el-input v-model="oldEditForm.name"></el-input>
         		</el-form-item>
@@ -254,6 +251,26 @@ import axios from 'axios'
 
 export default {
   data () {
+	  var checkPhone = (rule, value, callback) => {
+	    const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
+	    if (!value) {
+	      return callback(new Error('电话号码不能为空'))
+	    }
+	    setTimeout(() => {
+	      // Number.isInteger是es6验证数字是否为整数的方法,但是我实际用的时候输入的数字总是识别成字符串
+	      // 所以我就在前面加了一个+实现隐式转换
+	  
+	      if (!Number.isInteger(+value)) {
+	        callback(new Error('请输入数字值'))
+	      } else {
+	        if (phoneReg.test(value)) {
+	          callback()
+	        } else {
+	          callback(new Error('电话号码格式不正确'))
+	        }
+	      }
+	    }, 100)
+	  }
     return {
       searchText: '', // 角色查询内容
       oldDialogVisible: false,
@@ -339,7 +356,12 @@ export default {
         label: 'authName'
       },
       // 当前被分配权限的角色id
-      roleId: -1
+      roleId: -1,
+	  rules: {
+	  			phone: [
+	  			  { validator: checkPhone, trigger: 'blur'}
+	  			]
+	  		  }
     }
   },
   created () {
@@ -352,7 +374,7 @@ export default {
       var _this = this
       var name = _this.searchText
       
-      axios.post('oldPerson/selectDetail',
+      axios.post('restful/oldPerson/selectDetail',
         {
           'name': name === '' ? '' : _this.searchText
         },
@@ -371,11 +393,11 @@ export default {
         })
       
     },
-    // 添加角色
+    // 添加老人
     addOldPersons () {
       var _this = this
 	  var param = _this.oldForm
-      axios.post('oldPerson/add',
+      axios.post('restful/oldPerson/add',
         param,
         {
           headers: {
@@ -402,7 +424,7 @@ export default {
           console.log(error)
         })
     },
-    // 关闭添加角色对话框
+    // 关闭添加老人对话框
     closeRoleAddDialog () {
       // 重置表单
       this.$refs.addoldFormRef.resetFields()
@@ -411,7 +433,7 @@ export default {
     editOldPerson () {
 			this.addCustomerList()
       var _this = this
-      axios.post('oldPerson/update', _this.oldEditForm,
+      axios.post('restful/oldPerson/update', _this.oldEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -429,7 +451,7 @@ export default {
         } else {
           _this.$message({
             type: 'error',
-            message: '编辑老人信息失败'
+            message: '编辑老人信息失败，手表ID重复或没有手表设备'
           })
         }
       })
@@ -440,7 +462,7 @@ export default {
 		addCustomerList(){
 			var _this = this
 			  
-			  axios.post('customer/select',
+			  axios.post('restful/customer/select',
 			    {
 			      'customerName': ""
 			    },
@@ -469,7 +491,7 @@ export default {
           type: 'warning'
         })
         console.log(oldId)
-        axios.post('oldPerson/delete', {'oldId': oldId},
+        axios.post('restful/oldPerson/delete', {'oldId': oldId},
           {
             headers: {
               'content-type': 'application/json'

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
-@RequestMapping("/position")
+@RequestMapping("/restful/position")
 public class PositionController {
 
     @Autowired
@@ -30,7 +30,6 @@ public class PositionController {
         List<PositionDto> positionDtos=positionDao.getPosition(name);
         result.put("positionDtos",positionDtos);
         return result;
-
     }
 
     @ResponseBody

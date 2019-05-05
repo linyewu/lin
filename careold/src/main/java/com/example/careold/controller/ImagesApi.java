@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,25 +34,26 @@ import java.util.Map;
  * @create: 2018/11/19 11:03
  */
 @RestController
-@RequestMapping("image")
+@RequestMapping("/restful/image")
 public class ImagesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImagesApi.class);
 //    @Autowired
 //    ConstantProperties properties;
-
+    @Value("${local-path}")
+    private String path;
     /**
      * 功能：文件保存接口
      *
      * @Author: yanghd_bill
      * @create: 2018/12/20 11:03
      */
-    @PostMapping("saveImage")
+    @PostMapping("/saveImage")
     public ListOrderedMap saveImage(@RequestParam("file") MultipartFile file) {
         ListOrderedMap result=new ListOrderedMap();
         LOG.info("-------------------------------ImagesApi.java  start----------------------------------");
-        Map<String,String> res = PhotoUtil.saveFile(file, "C:/me/files/school/oldIot/src/assets/img/");//D:/me/img/tempDir/
-        LOG.info("-------------------------------ImagesApi.java  end----------------------------------");
+        Map<String,String> res = PhotoUtil.saveFile(file,path);//C:/me/files/git/lin/oldIot/src/assets/img/
+        LOG.info("-------------------------------ImagesApi.java  end----------------------------------");//C:/me/files/git/lin/oldIot/static/img
         result.put(ReturnCodeUtil.returnCode,"1111");
         return result;
     }
@@ -63,8 +65,9 @@ public class ImagesApi {
             filename=new String(filename.getBytes("iso-8859-1"),"UTF-8");
             //下载文件路径
 //            String path = request.getServletContext().getRealPath("/upload/");
-            String path = "C:/me/files/school/oldIot/src/assets/img/";
-            File file = new File( path+ filename);
+            String path2 = path;
+            System.out.println("下载图片");
+            File file = new File( path2+ filename);
             HttpHeaders headers = new HttpHeaders();
             //下载显示的文件名，解决中文名称乱码问题
             String downloadFielName = new String(filename.getBytes("iso-8859-1"),"UTF-8");

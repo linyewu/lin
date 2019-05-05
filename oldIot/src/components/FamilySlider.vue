@@ -35,7 +35,7 @@ export default {
       menuList: [
         {
           id: '1',
-          title: '健康管理',
+          title: '父母健康',
           icon: 'el-icon-location',
           children: [
 						{

@@ -23,7 +23,8 @@
         type="daterange"
         range-separator="至"
         start-placeholder="开始日期"
-        end-placeholder="结束日期">
+        end-placeholder="结束日期"
+				style="display: none;">
         </el-date-picker>
         </div>
         </el-col>
@@ -63,7 +64,7 @@
       
       <el-table-column type="index" width="150" align="center"></el-table-column>
       <el-table-column prop="name" label="姓名" width="180" align="center"></el-table-column>
-			<el-table-column prop="oldId" style="display: none;" label="id" width="180" align="center"></el-table-column>
+			<!-- <el-table-column prop="oldId" style="display: none;" label="id" width="180" align="center"></el-table-column> -->
       <el-table-column prop="sex" label="性别" width="150" align="center"></el-table-column>
 			<el-table-column prop="preState" label="血压状态" width="180" align="center">
 				<template slot-scope="scope">
@@ -205,19 +206,14 @@ export default {
   methods: {
     // 查询
     searchOlds () {
-      console.log('查询老人')
-      console.log('search')
 			
       var _this = this
       var name = _this.searchText
-			console.log(this.value6)
-			console.log('55555555555555')
 			if(this.value6.length==0){
 				console.log('null')
 				this.value6=['','']
 			}
-			console.log(this.value6[1])
-      axios.post('ratepre/selectRatepre',
+      axios.post('restful/ratepre/selectRatepre',
         {
           'name': name === '' ? '' : _this.searchText,
 					'timeFirst':_this.value6[0] =='' ? '' : _this.value6[0],
@@ -229,8 +225,6 @@ export default {
           },
           withCredentials: true
         }).then(function (response) {
-        console.log(response)
-				console.log('====================================')
         _this.oldsList = response.data.ratepreDtoList
         _this.total = response.data.ratepreDtoList.length
       })
@@ -239,9 +233,8 @@ export default {
         })
     },
 		getCount(){
-			console.log('kaishe')
 			var _this=this
-			axios.post('/ratepre/selectRatepreCount',
+			axios.post('restful/ratepre/selectRatepreCount',
 				{
 					
 				},
@@ -251,8 +244,6 @@ export default {
 					},
 					withCredentials: true
 				}).then(function (response) {
-				console.log("rateCount",response)
-				console.log('pppppppp')
 				_this.rateCount=response.data.rates.length
 				_this.preCount=response.data.pres.length
 			})
@@ -263,7 +254,7 @@ export default {
     // 添加角色
     addRoles () {
       var _this = this
-      axios.post('roles/save',
+      axios.post('restful/roles/save',
         {
           'roleName': _this.roleForm.roleName
         },
@@ -310,7 +301,7 @@ export default {
           type: 'warning'
         })
         console.log(roleName)
-        axios.post('roles/delete', {'roleName': roleName},
+        axios.post('restful/roles/delete', {'roleName': roleName},
           {
             headers: {
               'content-type': 'application/json'
@@ -363,7 +354,7 @@ export default {
 			_this.oldId=curOld.oldId
       // 展示对话框
       _this.isShowRoleDialog = true
-			axios.post('ratepre/selectRatepreDetail',{
+			axios.post('restful/ratepre/selectRatepreDetail',{
           'oldId': curOld.oldId
         },
 				{

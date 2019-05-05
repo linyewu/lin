@@ -18,4 +18,6 @@ public interface SaidDao {
     int updateSaid(Said said);
 
     List<String> isSaid(int saidId,String phone);
+
+    int updateSaid(String saidId,boolean flag);
 }

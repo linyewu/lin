@@ -22,7 +22,7 @@
     </div>
     <!-- start 添加角色弹窗 -->
     <el-dialog
-      title="角色添加"
+      title="设备添加"
       :visible.sync="watchDialogVisible"
       @close="closeRoleAddDialog"
       width="30%">
@@ -54,7 +54,7 @@
     <!-- end 添加角色弹窗 -->
     <!-- start 编辑角色弹窗 -->
     <el-dialog
-      title="角色编辑"
+      title="设备编辑"
       :visible.sync="watchEditDialogVisible"
       width="30%">
       <el-form label-width="80px" :model="watchEditForm">
@@ -62,7 +62,7 @@
         <el-input v-model="watchEditForm.name"></el-input>
         </el-form-item> -->
         <el-form-item label="手表Id" prop="deviceId">
-        <el-input v-model="watchEditForm.deviceId"></el-input>
+        <el-input v-model="watchEditForm.deviceId" disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item label="血压高值" prop="bpf">
         <el-input v-model="watchEditForm.bpf"></el-input>
@@ -213,7 +213,7 @@ export default {
       var _this = this
         var oldName = _this.searchText
         
-        axios.post('watchInfo/select',
+        axios.post('restful/watchInfo/select',
           {
             'oldName': oldName === '' ? '' : _this.searchText
           },
@@ -235,7 +235,7 @@ export default {
     // 添加角色
     addWatchs () {
       var _this = this
-      axios.post('watchInfo/add',
+      axios.post('restful/watchInfo/add',
         _this.watchForm,
         {
           headers: {
@@ -254,7 +254,7 @@ export default {
         } else {
           _this.$message({
             type: 'error',
-            message: '添加手表失败'
+            message: '添加手表失败——可能原因手表ID重复'
           })
         }
       })
@@ -270,7 +270,7 @@ export default {
     // 编辑
     editWatch () {
       var _this = this
-      axios.post('watchInfo/update', _this.watchEditForm,
+      axios.post('restful/watchInfo/update', _this.watchEditForm,
         {
           headers: {
             'content-type': 'application/json'
@@ -308,7 +308,7 @@ export default {
           type: 'warning'
         })
         console.log(deviceId)
-        axios.post('watchInfo/delete', {'deviceId': deviceId},
+        axios.post('restful/watchInfo/delete', {'deviceId': deviceId},
           {
             headers: {
               'content-type': 'application/json'

@@ -13,7 +13,7 @@
 		<div>
 			<el-row>
 				<div style="width: 40px;height: 40px; position: absolute;">
-					<img style="width: 40px;height: 40px;border-radius: 50%;position: relative;top: 6px;left: 21px;" src="../assets/img/QQ图片20170101150550.jpg" />
+					<img style="width: 40px;height: 40px;border-radius: 50%;position: relative;top: 6px;left: 21px;" :src="imgUrl" />
 				</div>
 				<div>
 					<el-form ref="formSaid" :model="formSaid" label-width="80px">
@@ -42,7 +42,7 @@
 				prop="touPic">
 				<template slot-scope="scope">
 					<div style="width: 40px;height: 40px; ">
-						<img style="width: 40px;height: 40px;border-radius: 50%;" src="../assets/img/QQ图片20170101150550.jpg" />
+						<img style="width: 40px;height: 40px;border-radius: 50%;" :src="scope.row.touPic" />
 					</div>
 				          <!-- <span v-if="scope.row.preState==1" style="color:red">异常</span>
 				          <span v-else style="color: #37B328">正常</span> -->
@@ -57,7 +57,7 @@
 				label=""
 				width="80"
 				prop="saidH">
-				<span style="color: #C0C0C0;float: right;" @click="getview">评论:</span>
+				<span style="color: #C0C0C0;float: right;" >评论:</span>
 			</el-table-column>
 			<el-table-column
 				label=""
@@ -68,7 +68,7 @@
 				label=""
 				width="80"
 				prop="backH">
-				<span style="color: #C0C0C0;float: right;" @click="getview">回复:</span>
+				<span style="color: #C0C0C0;float: right;" >回复:</span>
 			</el-table-column>
 			<el-table-column
 				label=""
@@ -79,10 +79,10 @@
 			<el-table-column label=""
 				width="400"
 				prop="good">
-				<template slot-scope="scope" @click="getview">
+				<template slot-scope="scope" >
 					<!-- <span style="float: right;">赞</span> -->
-					<span v-if="scope.row.good==1" style="color:red;float: right;" @click="getview">赞</span>
-					<span v-else style="color: #37B328;float: right;" @click="getview">赞</span>
+					<span v-if="scope.row.good==1" style="color:red;float: right;" @click="getview(scope.row)">赞</span>
+					<span v-else style="color: #37B328;float: right;" @click="getview(scope.row)">赞</span>
 				</template>
 			</el-table-column>
 			<el-table-column
@@ -105,6 +105,9 @@
 			this.textId=this.$route.query.textId
 			console.log(this.picId+'55555 '+this.textId)
 			this.familyPhone=localStorage.getItem('familyPhone')
+			this.familyTouPic=localStorage.getItem('familyTouPic')
+			this.userName=localStorage.getItem('user_name')
+			this.imgUrl=require('../assets/img/'+this.familyTouPic)
 			console.log('phone')
 			console.log(this.familyPhone)
 			this.searchDetail()
@@ -120,6 +123,7 @@
 				formSaid: {
 					said: ''
 				},
+				imgUrl: '',
 				tableData: [{
 				said: 'hello',
 				back: '你好',
@@ -136,6 +140,7 @@
 // 				{url:require('../assets/img/2.jpg')},
 // 				{url:require('../assets/img/image.jpg')}
 			  ],
+			  userName:'',
 			  good:'1',
 			  t: true,
 			  familyPhone: ''
@@ -149,7 +154,7 @@
 					'textId': this.textId
 				}
 				console.log(params)
-				axios.post('text/selectDetail',params,
+				axios.post('restful/text/selectDetail',params,
 				{
 					headers: {
 						'content-type': 'application/json'
@@ -164,7 +169,7 @@
 				_this.imgList=response.data.pics
 				for(var i=0;i<_this.imgList.length;i++){
 					console.log(_this.imgList[i].url)
-					_this.imgList[i].url = require('../assets/img/'+pics[i].picName)
+					_this.imgList[i].url = 'http://47.106.37.197:9110/'+pics[i].picName
 				}
 				
 				
@@ -180,7 +185,7 @@
 					'familyPhone':this.familyPhone
 				}
 				console.log(params)
-				axios.post('said/select',params,
+				axios.post('restful/said/select',params,
 				{
 					headers: {
 						'content-type': 'application/json'
@@ -189,7 +194,12 @@
 				}).then(function (response) {
 				console.log(response)
 				console.log('====================================')
-				_this.tableData = response.data.said2s
+				var tableData2 = response.data.said2s
+				for(var i=0;i<tableData2.length;i++){
+					console.log(tableData2[i].touPic)
+					tableData2[i].touPic = 'http://47.106.37.197:9110/'+tableData2[i].touPic
+				}
+				_this.tableData=tableData2
 				_this.total = response.data.said2s.length
 				
 				})
@@ -197,19 +207,56 @@
 					console.log(error)
 				})
 			},
-			getview(){
+			getview(rowed){
 				console.log('赞加一')
 				
-				if(this.t){
-					this.good='0'
-				}else{
-					this.good='1'
+				var _this=this
+				var params = {
+					'saidId': rowed.saidId,
+					'phone':this.familyPhone
 				}
-				this.t=!this.t;
+				console.log(params)
+				axios.post('restful/said/goodCount',params,
+				{
+					headers: {
+						'content-type': 'application/json'
+					},
+					withCredentials: true
+				}).then(function (response) {
+				console.log(response)
+				console.log('赞的处理2')
+				_this.searchSaid()
+				})
+				.catch(function (error) {
+					console.log(error)
+				})
 				
 			},
 			onSubmit(){
-				
+				var _this=this
+				var params = {
+					'phone':_this.familyPhone,
+					'said':_this.formSaid.said,
+					'textId':_this.textId,
+					'personName':_this.userName,
+					'touPic':_this.familyTouPic
+				}
+				console.log(params)
+				axios.post('restful/said/insert',params,
+				{
+					headers: {
+						'content-type': 'application/json'
+					},
+					withCredentials: true
+				}).then(function (response) {
+				console.log(response)
+				console.log('添加评论2')
+				_this.searchSaid()
+				_this.formSaid.said=''
+				})
+				.catch(function (error) {
+					console.log(error)
+				})
 			}
 			
 		}
